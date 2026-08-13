@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="LANG OS——郎懿莹的个人操作系统。三个磁盘装作品，一处网络邻居通往别处。工具可点开试用。">
-<title>LANG OS · 郎懿莹</title>
+<meta name="description" content="LANG OS——一个人的操作系统。三个磁盘装作品，工具可点开试用。">
+<title>LANG OS · 一个人的操作系统</title>
 <style>
   :root {
     --desk: #10201C;
@@ -601,10 +601,10 @@
             '<span class="nout">' + (ext ? '外链 ↗' : '待接入') + '</span></a>';
         }).join("");
         return '<h3>关于这台机器</h3>' +
-          '<p>你好，我是郎懿莹。这里不是主页，是我的桌面。</p>' +
-          '<p>桌面上挂着三个磁盘——<b>影像</b>、<b>网页</b>、<b>移动端</b>，装的是我用 AI 造出来的东西；有些作品能直接点开试用，有些还在施工，进程管理器里写得很诚实。</p>' +
+          '<p>你好，欢迎来玩。</p>' +
+          '<p>桌面上挂着三个磁盘——<b>影像</b>、<b>网页</b>、<b>移动端</b>，装的是我用 AI 造出来的东西；有些作品能直接点开试用，有些还在施工。</p>' +
           '<p>联系我：<a href="mailto:lang.soda@gmail.com" style="color:var(--seal)">lang.soda@gmail.com</a></p>' +
-          '<div class="crumb" style="margin-top:0.9rem">别处　ELSEWHERE — 我在别处的据点</div>' +
+          '<div class="crumb" style="margin-top:0.9rem">ELSEWHERE — 我在别处的据点</div>' +
           '<div class="neigh">' + nodes + '</div>' +
           '<p class="dim" style="margin-top:0.8rem">终端里藏了几个命令，无聊的话敲敲 <code>help</code>。</p>';
       };
@@ -773,7 +773,7 @@
     switch (c) {
       case "help":
         print("可用命令：\n  whoami        我是谁\n  ls            列出磁盘与作品\n  open <名字>   打开窗口，如 open 影像 / open 精听室\n  ps            查看全部进程\n  date          现在几点\n  clear         清屏\n  sudo hire     （需要权限）"); break;
-      case "whoami": print("郎懿莹。一个人，从想法到交付。\n默认解法：造一个工具。"); break;
+      case "whoami": print("一个人，从想法到交付。\n默认解法：造一个工具。"); break;
       case "ls":
         print("磁盘：影像:/  网页:/  移动端:/     网络邻居：小红书 X GitHub\n影像:/   熊猫团团  商业影像\n网页:/   精听室  FocusTree  FrameSonata  本站\n移动端:/ HTML预览  IG存图  顺便"); break;
       case "ps":
