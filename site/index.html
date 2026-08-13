@@ -448,11 +448,15 @@
       }
     },
     buzzegg: {
-      ico: "商", name: "商业影像 · Buzzegg", type: "传统影视 · 广告 / 内容片", status: "已归档", width: 36,
+      ico: "商", name: "商业影像 · Buzzegg", type: "传统影视 · 广告 / 内容片", status: "已归档", width: 38,
       body: function () {
         return '<div class="crumb">影像:/ 商业影像</div>' +
-          '<p class="dim">Buzzegg 时期的传统影视制作——为品牌拍摄的广告与内容片，下面几支可在新片场查看。</p>' +
-          '<div class="clients"><span>CHERRY</span><span>微软 Surface</span><span>福特 Ford</span></div>' +
+          '<p class="dim">为新能源车企、计算机及外设等品牌拍摄制作广告片。以下为几支样片链接。也可去新片场查看更多。</p>' +
+          gallery([
+            ["assets/tvc-cherry.jpg", "CHERRY 70周年 TVC"],
+            ["assets/tvc-surface.jpg", "微软 Surface Pro 9"],
+            ["assets/tvc-ford.jpg", "福特 Mustang Mach-E"]
+          ]) +
           linkRow([
             ["CHERRY 70周年 TVC", "https://www.xinpianchang.com/a12492855"],
             ["微软 Surface Pro 9", "https://www.xinpianchang.com/a12334071"],
