@@ -155,8 +155,22 @@
     box-shadow: var(--win-shadow);
     display: flex;
     flex-direction: column;
+    min-width: 15rem;
     min-height: 8rem;
-    max-height: calc(100vh - 6rem);
+    max-height: calc(100vh - 4rem);
+    resize: both;
+    overflow: hidden;
+  }
+  /* 右下角可拖拽缩放的把手 */
+  .window::after {
+    content: "";
+    position: absolute;
+    right: 1px; bottom: 1px;
+    width: 0.9rem; height: 0.9rem;
+    background:
+      linear-gradient(135deg, transparent 0 45%, var(--ink-soft) 45% 55%, transparent 55% 70%, var(--ink-soft) 70% 80%, transparent 80%);
+    pointer-events: none;
+    opacity: 0.6;
   }
   .window.focused { box-shadow: 0 24px 70px rgba(0,0,0,0.6); }
   .titlebar {
@@ -195,6 +209,8 @@
   .winbtn.close { border-color: var(--seal); }
   .winbtn.close:hover { background: var(--seal); }
   .winbody {
+    flex: 1 1 auto;
+    min-height: 0;
     padding: 1.1rem 1.2rem 1.3rem;
     overflow: auto;
     line-height: 1.8;
@@ -203,8 +219,8 @@
   .winbody h3 { font-family: var(--serif); margin: 0 0 0.6rem; font-size: 1.15rem; }
   .winbody p { margin: 0.5rem 0; }
   .winbody .dim { color: var(--ink-soft); font-size: 0.85rem; }
-  .winbody a { color: var(--teal); }
-  .winbody a:hover { color: var(--seal); }
+  .winbody a:not(.btn-launch):not(.node) { color: var(--teal); }
+  .winbody a:not(.btn-launch):not(.node):hover { color: var(--seal); }
   .crumb {
     font-family: var(--mono);
     font-size: 0.68rem;
@@ -354,7 +370,8 @@
   @media (max-width: 640px) {
     #icons { flex-direction: row; flex-wrap: wrap; max-height: none; left: 1rem; right: 1rem; }
     #icons .group-gap { display: none; }
-    .window { position: fixed !important; inset: 2.1rem 0 0 0 !important; width: 100% !important; max-height: none; border-left: 0; border-right: 0; }
+    .window { position: fixed !important; inset: 2.1rem 0 0 0 !important; width: 100% !important; max-height: none; border-left: 0; border-right: 0; resize: none !important; }
+    .window::after { display: none; }
     .titlebar { cursor: default; }
     #menubar .hide-sm { display: none; }
   }
@@ -420,14 +437,13 @@
       url: "https://v.youku.com/v_show/id_XNjUyMjk5NzAxNg==.html",
       body: function () {
         return '<div class="crumb">影像:/ 熊猫团团认世界</div>' +
-          '<p class="dim">儿童生活百科启蒙系列，10 集 AI 动画，已在优酷少儿频道上线。自制 Claude Skill 工作流，辅助完成分镜脚本、首尾帧提示词和视频生成，平台与工具结合 Lovart、Tapnow、Flow 完成制作。</p>' +
+          '<p class="dim">10 集 AI 动画儿童系列，已在优酷上线；单集约 3 分钟，单集制作约 20 小时。自制 Claude Skill 工作流，辅助完成分镜脚本、首尾帧提示词和视频生成，平台与工具结合了 Lovart、Tapnow、Flow 完成制作。</p>' +
           gallery([
             ["assets/panda-1.jpg", "住宅区人行道 · 场景"],
             ["assets/panda-2.jpg", "分镜 · 拿甜甜圈"],
             ["assets/panda-3.jpg", "分镜 · 收银区背景"],
             ["assets/panda-4.jpg", "角色与画面设定"]
           ]) +
-          figrow([["10 集", "已上线优酷"], ["约3分钟", "单集时长"], ["约20小时", "单集制作"]]) +
           linkRow([["优酷观看", ITEMS.panda.url]]);
       }
     },
@@ -451,7 +467,7 @@
       url: "https://dictation.buzzegg.cn/",
       body: function () {
         return '<div class="crumb">网页:/ 精听室</div>' +
-          '<p class="dim">基于本地音频与在线视频链接的轻量英语精听工具：逐句播放器，反复精听 + 听写 + 核对。独立开发、已部署，目前小范围试用。做出来治我自己的英语，现在也可以治你的。</p>' +
+          '<p class="dim">一个基于本地音频、在线视频链接和逐句播放器的轻量英语学习工具，独立完成并已部署，目前小范围试用。</p>' +
           appMount(ITEMS.dictation.url);
       }
     },
@@ -460,7 +476,8 @@
       url: "https://focus.buzzegg.cn/",
       body: function () {
         return '<div class="crumb">网页:/ Focus Tree</div>' +
-          '<p class="dim">给自由职业者和内容创作者的「外脑」：把目标、项目、进展和想法放进同一个结构。AI 按目标与状态重算各项目权重，用树状结构显示当前重心，帮你判断下一步、给新想法找到位置。</p>' +
+          '<p class="dim">AI 让一个人可以同时推进更多事情，也让工作和生活更容易失去重心。我想做一个给自由职业者和内容创作者使用的“外脑、个人助理和成长地图”，把目标、项目、进展和想法放进同一个结构里。</p>' +
+          '<p class="dim">Focus Tree 会根据用户设定的目标和项目状态，重新计算各个项目的权重，并用树状结构显示当前重心。AI 助手帮助用户判断下一步、记录已经完成的工作，也帮助新想法找到合适的位置。这是我对“一个人如何管理越来越多的可能性”做的一次产品尝试。</p>' +
           appMount(ITEMS.focustree.url);
       }
     },
@@ -469,7 +486,8 @@
       url: "https://frame-sonata.buzzegg.cn/",
       body: function () {
         return '<div class="crumb">网页:/ Frame Sonata</div>' +
-          '<p class="dim">给导演和制片的分镜工作台：把 storyboard / pitch deck 的整理、演示和制作推进串到一起，记录场景、道具等制作信息，把重复整理交给工具和 AI。已完成产品结构与界面迭代，现已上线，按商业化产品持续迭代。</p>' +
+          '<p class="dim">分镜从创作到拍摄落地要经历多次整理和解释，场景、道具及其他制作信息也容易散落在不同文件里。工作中还需要反复向团队和客户呈现，任何小改动都可能牵动整套文件。我希望把它做成一个帮助导演和制片专注创意的工作台，把重复整理交给工具和 AI。</p>' +
+          '<p class="dim">Frame Sonata 把分镜从创建延伸到演示和制作推进，支持整理 storyboard / pitch deck，并记录场景、道具等制作信息，减少整理和沟通成本。项目已完成产品结构、界面和功能迭代，现已上线，按商业化产品持续迭代。</p>' +
           appMount(ITEMS.framesonata.url);
       }
     },
@@ -487,7 +505,8 @@
       ico: "码", name: "HTML 预览 · 小程序", type: "微信小程序 · 2026.07 上线", status: "运行中", width: 30,
       body: function () {
         return '<div class="crumb">移动端:/ HTML预览小程序</div>' +
-          '<p class="dim">AI 让人人都能做 HTML slides、网页、小工具，但分享很麻烦：微信 / 飞书打不开 HTML，转 PDF 又丢动效。我反复被这个问题绊住，于是做了「HTML 预览」——免部署，直接在手机上渲染分享，还能跑 HTML 小游戏、小工具、单页应用。</p>' +
+          '<p class="dim">AI 让制作 HTML Slides、网页和前端小应用变得越来越容易，但分享仍然很麻烦：微信、飞书和手机端通常无法直接打开 HTML，转成 PDF 又会丢失动态效果。我在自己反复遇到这个问题后，判断这里缺少一个方便流通 HTML 的入口，于是做了「HTML 预览」小程序。</p>' +
+          '<p class="dim">它从最初的个人预览，逐步增加 HTML 小游戏、小工具和单页应用也能免部署分享。</p>' +
           qr("assets/qr-html.jpg", "微信扫码 · 正在小红书冷启动");
       }
     },
@@ -495,7 +514,7 @@
       ico: "存", name: "IG链接存图 · 小程序", type: "微信小程序 · 工具", status: "运行中", width: 30,
       body: function () {
         return '<div class="crumb">移动端:/ IG链接存图</div>' +
-          '<p class="dim">追星过程中顺手做的小工具：贴一个链接，经由部署在 Google Cloud 的 yt-dlp 解析、再回传阿里云 ECS，把图 / 视频存下来。方便大家。</p>' +
+          '<p class="dim">追星过程中顺手做的方便大家的小程序，链接经由 google cloud 中部署的 YT-DLP 解析再传回阿里云 ECS。</p>' +
           qr("assets/qr-iglink.jpg", "微信扫码使用");
       }
     },
@@ -504,8 +523,15 @@
       url: "https://shunbian-853b693f.eazo.dev/",
       body: function () {
         return '<div class="crumb">移动端:/ 顺便</div>' +
-          '<p class="dim">生活里有一类「有机会可以做，但不值得专门安排」的事：路过肯德基想起疯狂星期四、刚好在附近的展、下次经过顺手退个货。它们进不了 Calendar / Todo，收藏在各处，到了合适时机又想不起来。</p>' +
-          '<p class="dim">顺便要解决的不是「附近有什么可以做」，而是「当机会出现时，把你自己曾经产生过的意图重新想起来」。</p>' +
+          '<p class="dim">生活中存在一类“有机会可以做，但不值得专门安排”的事情。例如：</p>' +
+          '<ul class="dim" style="margin:0.2rem 0 0.5rem; padding-left:1.3rem">' +
+            '<li>疯狂星期四路过肯德基的时候可以考虑买</li>' +
+            '<li>最近某个奶茶店在做联名活动，如果刚好想喝奶茶可以考虑点这家</li>' +
+            '<li>有一个展想看，如果刚好在附近、时间合适可以去</li>' +
+            '<li>下次经过某个商场时顺便退货、买东西或看看某个柜台</li>' +
+          '</ul>' +
+          '<p class="dim">这些事情并不是传统意义上的 Todo：用户通常不知道什么时候一定要做，甚至不知道会在什么地点做。因此它们很难进入 Calendar / Todo；即使被收藏在小红书、大众点评、备忘录等地方，真正出现合适机会时，用户也往往想不起来。</p>' +
+          '<p style="border-left:2px solid var(--seal); padding-left:0.7rem; margin:0.6rem 0">“顺便”要解决的不是“附近有什么可以做”，而是“当机会出现时，把用户自己曾经产生过的意图重新想起来”。</p>' +
           appMount(ITEMS.shunbian.url);
       }
     }
@@ -772,8 +798,30 @@
     var parts = cmd.split(/\s+/), c = parts[0].toLowerCase();
     switch (c) {
       case "help":
-        print("可用命令：\n  whoami        我是谁\n  ls            列出磁盘与作品\n  open <名字>   打开窗口，如 open 影像 / open 精听室\n  ps            查看全部进程\n  date          现在几点\n  clear         清屏\n  sudo hire     （需要权限）"); break;
+        print("可用命令：\n  whoami        我是谁\n  neofetch      本机规格一览\n  ls            列出磁盘与作品\n  open <名字>   打开窗口，如 open 精听室\n  stack         我的工具链\n  now           最近在忙什么\n  why           为什么这么做\n  ps            查看全部进程\n  contact       联系方式\n  date          现在几点\n  clear         清屏\n  sudo hire     （需要权限）\n\n（还有几个命令没写出来，自己试试）"); break;
       case "whoami": print("一个人，从想法到交付。\n默认解法：造一个工具。"); break;
+      case "neofetch": case "fetch":
+        print(
+          '<span style="color:#F6F3EA">LANG · OS</span> <span style="color:#6D7A72">v0.2 — 一个人的操作系统</span>\n' +
+          '<span style="color:#7FC4B4">──────────────────────────────</span>\n' +
+          '<span style="color:#7FC4B4">host</span>    一个人 = 一整间公司\n' +
+          '<span style="color:#7FC4B4">kernel</span>  造工具 · 原生 JS · 单文件\n' +
+          '<span style="color:#7FC4B4">disks</span>   影像:/　网页:/　移动端:/\n' +
+          '<span style="color:#7FC4B4">apps</span>    9 个作品，大多在跑\n' +
+          '<span style="color:#7FC4B4">stack</span>   Claude Skill · Lovart · Tapnow · Flow\n' +
+          '<span style="color:#7FC4B4">uptime</span>  心力 ▓▓▓▓▓░░ 恢复中\n' +
+          '<span style="color:#7FC4B4">shell</span>   /sys/term'
+        ); break;
+      case "stack": case "skills":
+        print("常用工具链：\n  生成 / 动画   Claude Skill 工作流 · Lovart · Tapnow · Flow\n  抓取 / 后端   yt-dlp · Google Cloud · 阿里云 ECS\n  这个站       原生 JS · 单文件 · 自写窗口系统\n一个人，从想法到交付。"); break;
+      case "now":
+        print("此刻在忙：\n  · HTML 预览小程序 — 小红书冷启动中\n  · Frame Sonata — 按商业化产品持续迭代\n  · 精听室 — 小范围试用中"); break;
+      case "why":
+        print("解决问题的默认方式，是造一个工具。\n一个人 + AI，也能是一整间公司。"); break;
+      case "contact": case "email":
+        print('联系方式：<a href="mailto:lang.soda@gmail.com" style="color:#7FC4B4">lang.soda@gmail.com</a>'); break;
+      case "coffee":
+        print("☕ 正在冲泡…… <span style=\"color:#C2452C\">error 418: I'm a teapot.</span>（我是个茶壶，冲不了咖啡）"); break;
       case "ls":
         print("磁盘：影像:/  网页:/  移动端:/     网络邻居：小红书 X GitHub\n影像:/   熊猫团团  商业影像\n网页:/   精听室  FocusTree  FrameSonata  本站\n移动端:/ HTML预览  IG存图  顺便"); break;
       case "ps":
