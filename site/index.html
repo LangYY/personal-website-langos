@@ -327,6 +327,7 @@
 
   /* 图片 / 画廊 / 二维码 / 外链按钮组 */
   .shot { display: block; width: 100%; border: 1px solid var(--paper-edge); border-radius: 4px; margin: 0.6rem 0; }
+  .shot-sm { max-width: 19rem; }
   .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin: 0.7rem 0; }
   .gallery figure { margin: 0; }
   .gallery img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; border: 1px solid var(--paper-edge); border-radius: 4px; }
@@ -346,6 +347,18 @@
   .appshow { display: flex; gap: 1.3rem; align-items: center; flex-wrap: wrap; margin: 0.8rem 0 0.3rem; }
   .phone-shot { display: block; max-width: 12rem; width: 100%; border: 1px solid var(--paper-edge); border-radius: 12px; }
   .appshow .qr-real { margin: 0; }
+
+  /* 问题箱表单 */
+  .askform { display: flex; flex-direction: column; gap: 0.6rem; margin-top: 0.7rem; }
+  .askform textarea, .askform input { font-family: var(--sans); font-size: 0.9rem; color: var(--ink); background: #fff; border: 1px solid var(--paper-edge); border-radius: 6px; padding: 0.6rem 0.7rem; width: 100%; box-sizing: border-box; }
+  .askform textarea { min-height: 6rem; resize: vertical; line-height: 1.6; }
+  .askform textarea:focus, .askform input:focus { outline: none; border-color: var(--teal); }
+  .askform button { align-self: flex-start; font-family: var(--mono); font-size: 0.8rem; letter-spacing: 0.08em; color: var(--paper); background: var(--teal); border: 0; border-radius: 6px; padding: 0.5rem 1.1rem; cursor: pointer; }
+  .askform button:hover { background: var(--seal); }
+  .askform button:disabled { opacity: 0.5; cursor: default; }
+  .ask-status { margin-top: 0.5rem; font-size: 0.85rem; min-height: 1.1rem; }
+  .ask-status.ok { color: var(--teal); }
+  .ask-status.err { color: var(--seal); }
 
   /* 状态章 */
   .st { font-size: 0.66rem; letter-spacing: 0.08em; padding: 0.1rem 0.45rem; border-radius: 999px; border: 1px solid var(--teal); color: var(--teal); white-space: nowrap; font-family: var(--mono); }
@@ -443,6 +456,12 @@
     }).join("") + '</div>';
   };
   var phoneShot = function (src, alt) { return '<img class="phone-shot" src="' + src + '" alt="' + esc(alt || "") + '">'; };
+  var shotSm = function (src, alt) { return '<img class="shot shot-sm" src="' + src + '" alt="' + esc(alt || "") + '">'; };
+
+  /* ---------- 问题箱：Formspree 表单接收端点 ----------
+     去 formspree.io 建一个表单（收件邮箱 lang.soda@gmail.com），
+     把它给的 https://formspree.io/f/xxxxxxxx 填到这里即可生效。 */
+  var ASK_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
 
   /* ---------- 作品条目 ---------- */
   var ITEMS = {
@@ -485,6 +504,7 @@
       body: function () {
         return '<div class="crumb">网页:/ English Dictation</div>' +
           '<p class="dim">一个基于本地音频、在线视频链接和逐句播放器的轻量英语学习工具，独立完成并已部署，目前小范围试用。</p>' +
+          shotSm("assets/app-dictation.jpg", "English Dictation 界面") +
           appMount(ITEMS.dictation.url);
       }
     },
@@ -495,6 +515,7 @@
         return '<div class="crumb">网页:/ Focus Tree</div>' +
           '<p class="dim">AI 让一个人可以同时推进更多事情，也让工作和生活更容易失去重心。我想做一个给自由职业者和内容创作者使用的“外脑、个人助理和成长地图”，把目标、项目、进展和想法放进同一个结构里。</p>' +
           '<p class="dim">Focus Tree 会根据用户设定的目标和项目状态，重新计算各个项目的权重，并用树状结构显示当前重心。AI 助手帮助用户判断下一步、记录已经完成的工作，也帮助新想法找到合适的位置。这是我对“一个人如何管理越来越多的可能性”做的一次产品尝试。</p>' +
+          shotSm("assets/app-focus.jpg", "Focus Tree 界面") +
           appMount(ITEMS.focustree.url);
       }
     },
@@ -505,6 +526,7 @@
         return '<div class="crumb">网页:/ Frame Sonata</div>' +
           '<p class="dim">分镜从创作到拍摄落地要经历多次整理和解释，场景、道具及其他制作信息也容易散落在不同文件里。工作中还需要反复向团队和客户呈现，任何小改动都可能牵动整套文件。我希望把它做成一个帮助导演和制片专注创意的工作台，把重复整理交给工具和 AI。</p>' +
           '<p class="dim">Frame Sonata 把分镜从创建延伸到演示和制作推进，支持整理 storyboard / pitch deck，并记录场景、道具等制作信息，减少整理和沟通成本。项目已完成产品结构、界面和功能迭代，现已上线，按商业化产品持续迭代。</p>' +
+          shotSm("assets/app-framesonata.jpg", "Frame Sonata 界面") +
           appMount(ITEMS.framesonata.url);
       }
     },
@@ -515,7 +537,7 @@
       body: function () {
         return '<p class="dim">AI 让制作 HTML Slides、网页和前端小应用变得越来越容易，但分享仍然很麻烦：微信、飞书和手机端通常无法直接打开 HTML，转成 PDF 又会丢失动态效果。我在自己反复遇到这个问题后，判断这里缺少一个方便流通 HTML 的入口，于是做了「HTML 预览」小程序。</p>' +
           '<p class="dim">它从最初的个人预览，逐步增加 HTML 小游戏、小工具和单页应用也能免部署分享。</p>' +
-          '<div class="appshow">' + phoneShot("assets/app-html.jpg", "HTML 预览小程序界面") + qr("assets/qr-html.jpg", "微信扫码 · 正在小红书冷启动") + '</div>';
+          '<div class="appshow">' + phoneShot("assets/app-html.jpg", "HTML 预览小程序界面") + qr("assets/qr-html.jpg", "微信扫码使用") + '</div>';
       }
     },
     iglink: {
@@ -565,16 +587,17 @@
     { gap: true },
     { id: "about",    ch: "关", label: "关于本机", cls: "sys" },
     { id: "ps",       ch: "程", label: "进程管理器", cls: "sys" },
-    { id: "terminal", ch: "终", label: "终端", cls: "sys" }
+    { id: "terminal", ch: "终", label: "终端", cls: "sys" },
+    { id: "ask",      ch: "问", label: "问题箱", cls: "sys" }
   ];
 
   var TITLES = {
     "drive:moving": "影像", "drive:web": "网页", "drive:mobile": "移动端",
-    about: "关于本机", ps: "进程管理器", terminal: "终端"
+    about: "关于本机", ps: "进程管理器", terminal: "终端", ask: "问题箱"
   };
   var PATHS = {
     "drive:moving": "/vol/影像", "drive:web": "/vol/网页", "drive:mobile": "/vol/移动端",
-    about: "/sys/about", ps: "/sys/proc", terminal: "/sys/term"
+    about: "/sys/about", ps: "/sys/proc", terminal: "/sys/term", ask: "/sys/ask"
   };
 
   /* ============================================================
@@ -680,6 +703,18 @@
           '<div class="term-line"><span class="prompt">lang@os:~$&nbsp;</span>' +
           '<input class="term-input" autocomplete="off" spellcheck="false" aria-label="终端输入"></div></div>';
       };
+    } else if (winId === "ask") {
+      title = "问题箱"; ch = "问"; width = 32;
+      buildHTML = function () {
+        return '<h3>问题箱</h3>' +
+          '<p class="dim">想问我点什么？留下问题，我会看到。留个联系方式方便回你（选填）。</p>' +
+          '<form class="askform" novalidate>' +
+            '<textarea name="message" required placeholder="你的问题…"></textarea>' +
+            '<input name="contact" placeholder="邮箱 / 微信（选填，方便回复）">' +
+            '<button type="submit">投递 ↗</button>' +
+          '</form>' +
+          '<div class="ask-status" role="status"></div>';
+      };
     } else { return null; }
 
     return { title: title, path: path, width: width, ch: ch, html: buildHTML };
@@ -716,7 +751,7 @@
 
     win.appendChild(bar); win.appendChild(body);
     win.dataset.win = winId; win.dataset.ch = spec.ch;
-    desk.appendChild(win);
+    document.body.appendChild(win);
     openWins[winId] = win;
     focusWin(win);
 
@@ -760,6 +795,31 @@
     /* 终端 */
     var term = body.querySelector(".term");
     if (term) initTerm(term);
+    /* 问题箱表单 */
+    var askForm = body.querySelector(".askform");
+    if (askForm) initAsk(askForm, body.querySelector(".ask-status"));
+  }
+
+  function initAsk(form, status) {
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var msg = form.message.value.trim();
+      if (!msg) { status.className = "ask-status err"; status.textContent = "先写点问题再投递～"; return; }
+      var btn = form.querySelector("button");
+      btn.disabled = true; status.className = "ask-status"; status.textContent = "投递中…";
+      fetch(ASK_ENDPOINT, {
+        method: "POST",
+        headers: { "Accept": "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg, contact: form.contact.value.trim(), _subject: "LANG OS 问题箱" })
+      }).then(function (r) {
+        if (!r.ok) throw new Error("bad");
+        form.reset();
+        status.className = "ask-status ok"; status.textContent = "已投递，谢谢！我会看到。";
+      }).catch(function () {
+        status.className = "ask-status err";
+        status.innerHTML = '投递失败，直接发我也行：<a href="mailto:lang.soda@gmail.com" style="color:var(--seal)">lang.soda@gmail.com</a>';
+      }).then(function () { btn.disabled = false; });
+    });
   }
 
   function closeWin(id) { var w = openWins[id]; if (w) { w.remove(); delete openWins[id]; removeDock(id); } }
@@ -817,34 +877,14 @@
     var parts = cmd.split(/\s+/), c = parts[0].toLowerCase();
     switch (c) {
       case "help":
-        print("可用命令：\n  whoami        我是谁\n  neofetch      本机规格一览\n  ls            列出磁盘与作品\n  open <名字>   打开窗口，如 open 熊猫团团\n  stack         我的工具链\n  now           最近在忙什么\n  why           为什么这么做\n  ps            查看全部进程\n  contact       联系方式\n  date          现在几点\n  clear         清屏\n  sudo hire     （需要权限）\n\n（还有几个命令没写出来，自己试试）"); break;
-      case "whoami": print("一个人，从想法到交付。\n默认解法：造一个工具。"); break;
-      case "neofetch": case "fetch":
-        print(
-          '<span style="color:#F6F3EA">LANG · OS</span> <span style="color:#6D7A72">v0.2 — 一个人的操作系统</span>\n' +
-          '<span style="color:#7FC4B4">──────────────────────────────</span>\n' +
-          '<span style="color:#7FC4B4">host</span>    一个人 = 一整间公司\n' +
-          '<span style="color:#7FC4B4">kernel</span>  造工具 · 原生 JS · 单文件\n' +
-          '<span style="color:#7FC4B4">disks</span>   影像:/　网页:/　移动端:/\n' +
-          '<span style="color:#7FC4B4">apps</span>    9 个作品，大多在跑\n' +
-          '<span style="color:#7FC4B4">stack</span>   Claude Skill · Lovart · Tapnow · Flow\n' +
-          '<span style="color:#7FC4B4">uptime</span>  心力 ▓▓▓▓▓░░ 恢复中\n' +
-          '<span style="color:#7FC4B4">shell</span>   /sys/term'
-        ); break;
-      case "stack": case "skills":
-        print("常用工具链：\n  生成 / 动画   Claude Skill 工作流 · Lovart · Tapnow · Flow\n  抓取 / 后端   yt-dlp · Google Cloud · 阿里云 ECS\n  这个站       原生 JS · 单文件 · 自写窗口系统\n一个人，从想法到交付。"); break;
-      case "now":
-        print("此刻在忙：\n  · HTML 预览小程序 — 小红书冷启动中\n  · Frame Sonata — 按商业化产品持续迭代\n  · English Dictation — 小范围试用中"); break;
-      case "why":
-        print("解决问题的默认方式，是造一个工具。\n一个人 + AI，也能是一整间公司。"); break;
+        print("可用命令：\n  ls            列出磁盘与作品\n  open <名字>   打开窗口，如 open 熊猫团团\n  ask           问题箱 · 问我点什么\n  contact       联系方式\n  date          现在几点\n  clear         清屏\n  sudo hire     （需要权限）\n\n（还有几个命令没写出来，自己试试）"); break;
+      case "ask": openWindow("ask"); print("打开问题箱…"); break;
       case "contact": case "email":
         print('联系方式：<a href="mailto:lang.soda@gmail.com" style="color:#7FC4B4">lang.soda@gmail.com</a>'); break;
       case "coffee":
-        print("☕ 正在冲泡…… <span style=\"color:#C2452C\">error 418: I'm a teapot.</span>（我是个茶壶，冲不了咖啡）"); break;
+        print("☕ 送你一杯咖啡。领取方式：加微信 <span style=\"color:#F6F3EA\">langyy</span>（备注咖啡）。"); break;
       case "ls":
         print("磁盘：影像:/  网页:/  移动端:/     网络邻居：小红书 X GitHub\n影像:/   熊猫团团  商业影像\n网页:/   English Dictation  FocusTree  FrameSonata\n移动端:/ HTML预览  IG存图  顺便"); break;
-      case "ps":
-        print("PID 1024 熊猫团团认世界  已上线\nPID 2007 HTML预览小程序  运行中\nPID 2009 顺便            运行中\nPID 1701 English Dictation 试用中\nPID 1702 FocusTree       运行中\nPID 1704 FrameSonata     运行中"); break;
       case "date": print(new Date().toLocaleString("zh-CN")); break;
       case "clear":
         term.querySelectorAll(".out").forEach(function (o) { o.remove(); }); break;
@@ -861,7 +901,8 @@
           "小程序": "item:miniapp", "html预览": "item:miniapp", "html": "item:miniapp",
           "ig存图": "item:iglink", "ig": "item:iglink", "存图": "item:iglink",
           "顺便": "item:shunbian",
-          "关于": "about", "进程": "ps", "终端": "terminal"
+          "关于": "about", "进程": "ps", "终端": "terminal",
+          "问题箱": "ask", "提问": "ask", "问": "ask"
         };
         var id = map[name];
         if (id) { openWindow(id); print("正在打开 " + name + " …"); }
