@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="LANG OS——郎懿滢的个人操作系统。三个磁盘装作品，一处网络邻居通往别处。工具可点开试用。">
+<title>LANG OS · 郎懿滢</title>
+<style>
+  :root {
+    --desk: #10201C;
+    --desk-grid: rgba(140, 190, 175, 0.07);
+    --paper: #F6F3EA;
+    --paper-edge: #DDD6C4;
+    --ink: #22302B;
+    --ink-soft: #6D7A72;
+    --seal: #C2452C;
+    --seal-soft: rgba(194, 69, 44, 0.12);
+    --teal: #2E6E62;
+    --teal-bright: #7FC4B4;
+    --serif: "Songti SC", "Noto Serif SC", "Source Han Serif SC", serif;
+    --sans: "PingFang SC", "Noto Sans SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    --win-shadow: 0 18px 50px rgba(0, 0, 0, 0.45);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    background: var(--desk);
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  /* ================= 桌面 ================= */
+  #desk {
+    position: fixed;
+    inset: 0;
+    background-color: var(--desk);
+    background-image:
+      linear-gradient(var(--desk-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--desk-grid) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+  #inktrail { position: absolute; inset: 0; pointer-events: none; }
+
+  /* ================= 顶栏 ================= */
+  #menubar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 2.1rem;
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 0 1rem;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    color: var(--teal-bright);
+    background: rgba(9, 18, 15, 0.72);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid rgba(127, 196, 180, 0.18);
+    z-index: 9000;
+    user-select: none;
+  }
+  #menubar .os-name { color: var(--paper); font-weight: 600; }
+  #menubar .os-name .seal-dot { color: var(--seal); }
+  #menubar .spacer { flex: 1; }
+  #menubar a { color: var(--teal-bright); text-decoration: none; }
+  #menubar a:hover { color: var(--paper); }
+  #heart { white-space: nowrap; }
+
+  /* ================= 桌面图标 ================= */
+  #icons {
+    position: absolute;
+    top: 3.2rem;
+    left: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    max-height: calc(100% - 5rem);
+  }
+  #icons .group-gap { height: 0.6rem; }
+  .icon {
+    width: 5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: rgba(246, 243, 234, 0.85);
+    font-family: var(--sans);
+  }
+  .icon .stamp {
+    position: relative;
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--paper);
+    border: 2px solid var(--seal);
+    border-radius: 6px;
+    background: rgba(194, 69, 44, 0.16);
+    transform: rotate(-3deg);
+    transition: transform 0.18s ease, background 0.18s ease;
+  }
+  .icon:nth-child(even) .stamp { transform: rotate(2.5deg); }
+  .icon:hover .stamp, .icon:focus-visible .stamp {
+    transform: rotate(0deg) scale(1.06);
+    background: rgba(194, 69, 44, 0.32);
+  }
+  /* 系统工具用青色描边，与朱砂磁盘区分 */
+  .icon.sys .stamp {
+    border-color: var(--teal);
+    background: rgba(46, 110, 98, 0.16);
+    font-size: 1.1rem;
+  }
+  .icon.sys:hover .stamp, .icon.sys:focus-visible .stamp {
+    background: rgba(46, 110, 98, 0.34);
+  }
+  /* 网络邻居：虚线描边，暗示"在别处" */
+  .icon.net .stamp { border-style: dashed; }
+  .icon .en {
+    position: absolute;
+    bottom: -0.35rem; right: -0.35rem;
+    font-family: var(--mono);
+    font-size: 0.5rem;
+    letter-spacing: 0;
+    background: var(--desk);
+    border: 1px solid currentColor;
+    border-radius: 2px;
+    padding: 0 0.15rem;
+    color: var(--teal-bright);
+  }
+  .icon:focus-visible { outline: 1px dashed var(--teal-bright); outline-offset: 4px; }
+  .icon .label {
+    font-size: 0.74rem;
+    letter-spacing: 0.06em;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+  }
+
+  /* ================= 窗口 ================= */
+  .window {
+    position: absolute;
+    width: min(34rem, calc(100vw - 2rem));
+    background: var(--paper);
+    border: 1px solid var(--paper-edge);
+    box-shadow: var(--win-shadow);
+    display: flex;
+    flex-direction: column;
+    min-height: 8rem;
+    max-height: calc(100vh - 6rem);
+  }
+  .window.focused { box-shadow: 0 24px 70px rgba(0,0,0,0.6); }
+  .titlebar {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.55rem 0.9rem;
+    border-bottom: 1px solid var(--paper-edge);
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+  }
+  .titlebar:active { cursor: grabbing; }
+  .titlebar .t {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.08em;
+  }
+  .titlebar .path {
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+  }
+  .titlebar .spacer { flex: 1; }
+  .winbtn {
+    width: 0.95rem; height: 0.95rem;
+    border-radius: 50%;
+    border: 1px solid var(--ink-soft);
+    background: transparent;
+    cursor: pointer;
+    padding: 0;
+  }
+  .winbtn:hover { background: var(--ink-soft); }
+  .winbtn.close { border-color: var(--seal); }
+  .winbtn.close:hover { background: var(--seal); }
+  .winbody {
+    padding: 1.1rem 1.2rem 1.3rem;
+    overflow: auto;
+    line-height: 1.8;
+    font-size: 0.92rem;
+  }
+  .winbody h3 { font-family: var(--serif); margin: 0 0 0.6rem; font-size: 1.15rem; }
+  .winbody p { margin: 0.5rem 0; }
+  .winbody .dim { color: var(--ink-soft); font-size: 0.85rem; }
+  .winbody a { color: var(--teal); }
+  .winbody a:hover { color: var(--seal); }
+  .crumb {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    color: var(--ink-soft);
+    letter-spacing: 0.1em;
+    margin: 0 0 0.7rem;
+  }
+
+  /* ---------- 文件夹视图（磁盘内容） ---------- */
+  .folder { display: flex; flex-direction: column; }
+  .fitem {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.7rem 0.5rem;
+    border-bottom: 1px solid var(--paper-edge);
+    cursor: pointer;
+    text-align: left;
+    background: none;
+    border-left: 0; border-right: 0; border-top: 0;
+    width: 100%;
+    font-family: var(--sans);
+    color: var(--ink);
+  }
+  .fitem:hover { background: var(--seal-soft); }
+  .fitem .fico {
+    flex: none;
+    width: 2.2rem; height: 2.2rem;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--serif); font-weight: 700; font-size: 1.05rem;
+    color: var(--seal);
+    border: 1.5px solid var(--seal);
+    border-radius: 4px;
+    background: var(--seal-soft);
+  }
+  .fitem .fmeta { flex: 1; min-width: 0; }
+  .fitem .fname { font-family: var(--serif); font-weight: 600; font-size: 1rem; }
+  .fitem .ftype { font-family: var(--mono); font-size: 0.68rem; color: var(--ink-soft); letter-spacing: 0.08em; }
+  .fitem .arrow { color: var(--ink-soft); font-family: var(--mono); }
+
+  /* ---------- 网络邻居 ---------- */
+  .neigh { display: flex; flex-direction: column; }
+  .neigh a.node {
+    display: flex; align-items: center; gap: 0.85rem;
+    padding: 0.75rem 0.5rem;
+    border-bottom: 1px solid var(--paper-edge);
+    text-decoration: none; color: var(--ink);
+  }
+  .neigh a.node:hover { background: var(--seal-soft); }
+  .neigh .nico {
+    flex: none; width: 2.2rem; height: 2.2rem;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-weight: 700; font-size: 0.85rem;
+    color: var(--teal); border: 1.5px dashed var(--teal); border-radius: 4px;
+  }
+  .neigh .nname { font-family: var(--serif); font-weight: 600; }
+  .neigh .naddr { font-family: var(--mono); font-size: 0.68rem; color: var(--ink-soft); }
+  .neigh .nout { margin-left: auto; color: var(--ink-soft); font-family: var(--mono); font-size: 0.72rem; }
+
+  /* app 内嵌 iframe */
+  .appframe-wrap { border: 1px solid var(--paper-edge); background: #fff; margin-top: 0.6rem; }
+  .appframe-wrap iframe { display: block; width: 100%; height: 24rem; border: 0; }
+  .frame-empty {
+    display: flex; flex-direction: column; gap: 0.4rem;
+    align-items: center; justify-content: center;
+    height: 13rem; margin-top: 0.6rem;
+    border: 1px dashed var(--ink-soft);
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
+    color: var(--ink-soft); text-align: center; padding: 1rem;
+  }
+  .btn-launch {
+    display: inline-block; margin-top: 0.5rem;
+    font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.1em;
+    color: var(--paper); background: var(--teal);
+    padding: 0.35rem 0.8rem; border-radius: 4px; text-decoration: none;
+  }
+  .btn-launch:hover { background: var(--seal); }
+
+  /* 视频/图片占位 */
+  .media-slot {
+    aspect-ratio: 16 / 9;
+    border: 1px dashed var(--ink-soft);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
+    color: var(--ink-soft); margin: 0.6rem 0;
+  }
+  .qr-slot {
+    width: 11rem; height: 11rem;
+    border: 2px solid var(--seal); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.12em;
+    color: var(--seal); margin: 0.8rem auto; transform: rotate(-2deg);
+    text-align: center;
+  }
+  .figrow { display: flex; gap: 1.6rem; flex-wrap: wrap; margin-top: 0.8rem; padding-top: 0.7rem; border-top: 1px dashed var(--paper-edge); }
+  .figrow .n { font-family: var(--mono); font-weight: 600; color: var(--teal); font-variant-numeric: tabular-nums; }
+  .figrow .l { font-size: 0.75rem; color: var(--ink-soft); }
+  .clients { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
+  .clients span { font-family: var(--mono); font-size: 0.7rem; border: 1px solid var(--paper-edge); padding: 0.1rem 0.5rem; border-radius: 3px; color: var(--ink-soft); }
+
+  /* 状态章 */
+  .st { font-size: 0.66rem; letter-spacing: 0.08em; padding: 0.1rem 0.45rem; border-radius: 999px; border: 1px solid var(--teal); color: var(--teal); white-space: nowrap; font-family: var(--mono); }
+  .st.paused { border-color: var(--ink-soft); color: var(--ink-soft); }
+  .st.dead { border-style: dashed; border-color: var(--seal); color: var(--seal); }
+
+  /* ================= 进程管理器 ================= */
+  table.ps { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 0.76rem; font-variant-numeric: tabular-nums; }
+  table.ps th { text-align: left; font-weight: 400; color: var(--ink-soft); letter-spacing: 0.12em; font-size: 0.66rem; padding: 0.3rem 0.4rem; border-bottom: 1px solid var(--paper-edge); }
+  table.ps td { padding: 0.4rem 0.4rem; border-bottom: 1px solid var(--paper-edge); }
+  table.ps tr[data-open] { cursor: pointer; }
+  table.ps tr[data-open]:hover td { background: var(--seal-soft); }
+
+  /* ================= 终端 ================= */
+  .term { background: #0C1714; color: #C8DCD4; font-family: var(--mono); font-size: 0.8rem; line-height: 1.7; padding: 0.9rem 1rem; min-height: 16rem; max-height: 22rem; overflow-y: auto; cursor: text; }
+  .term .out { white-space: pre-wrap; word-break: break-word; }
+  .term .prompt { color: var(--teal-bright); }
+  .term .cmd-echo { color: #F6F3EA; }
+  .term-line { display: flex; }
+  .term-input { flex: 1; background: none; border: 0; outline: none; color: #F6F3EA; font: inherit; caret-color: var(--seal); padding: 0; }
+
+  /* ================= dock ================= */
+  #dock { position: fixed; bottom: 0.9rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.6rem; padding: 0.45rem 0.7rem; background: rgba(9, 18, 15, 0.72); border: 1px solid rgba(127, 196, 180, 0.18); border-radius: 10px; backdrop-filter: blur(6px); z-index: 9000; }
+  #dock:empty { display: none; }
+  #dock button { font-family: var(--serif); font-weight: 700; color: var(--paper); background: rgba(194, 69, 44, 0.2); border: 1.5px solid var(--seal); border-radius: 5px; width: 2.2rem; height: 2.2rem; cursor: pointer; font-size: 1rem; }
+  #dock button:hover { background: rgba(194, 69, 44, 0.4); }
+
+  /* ================= 开机 ================= */
+  #boot { position: fixed; inset: 0; background: var(--desk); z-index: 9999; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: opacity 0.5s ease; }
+  #boot.off { opacity: 0; pointer-events: none; }
+  #bootlog { font-family: var(--mono); font-size: 0.82rem; line-height: 2.1; color: var(--teal-bright); letter-spacing: 0.06em; padding: 1.5rem; max-width: 36rem; }
+  #bootlog .ok { color: var(--paper); }
+  #bootlog .warn { color: var(--seal); filter: brightness(1.5); }
+
+  /* ================= 移动端 ================= */
+  @media (max-width: 640px) {
+    #icons { flex-direction: row; flex-wrap: wrap; max-height: none; left: 1rem; right: 1rem; }
+    #icons .group-gap { display: none; }
+    .window { position: fixed !important; inset: 2.1rem 0 0 0 !important; width: 100% !important; max-height: none; border-left: 0; border-right: 0; }
+    .titlebar { cursor: default; }
+    #menubar .hide-sm { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<div id="boot" role="button" aria-label="点击跳过开机动画"><div id="bootlog"></div></div>
+
+<div id="desk"><canvas id="inktrail"></canvas></div>
+
+<div id="menubar">
+  <span class="os-name">LANG<span class="seal-dot">·</span>OS <span class="hide-sm">v0.2</span></span>
+  <span class="hide-sm">一个人的操作系统</span>
+  <span class="spacer"></span>
+  <span id="heart" class="hide-sm">心力 ▓▓▓▓▓░░ 恢复中</span>
+  <a href="mailto:lang.soda@gmail.com">lang.soda@gmail.com</a>
+  <span id="clock"></span>
+</div>
+
+<div id="icons" role="menu"></div>
+<div id="dock"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ============================================================
+     数据层：三个磁盘 + 网络邻居 + 系统工具
+     —— 有线上地址就填 url，窗口即从"待接入"变为可直接试用
+     —— 社交/项目真实链接填进对应 url/href 即可，无需改结构
+     ============================================================ */
+
+  var esc = function (s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); };
+  var mediaSlot = function (t) { return '<div class="media-slot">' + t + '</div>'; };
+  var figrow = function (arr) {
+    return '<div class="figrow">' + arr.map(function (f) {
+      return '<div><div class="n">' + f[0] + '</div><div class="l">' + f[1] + '</div></div>';
+    }).join("") + '</div>';
+  };
+  var appMount = function (url) { return '<div class="app-mount" data-url="' + (url || "") + '"></div>'; };
+
+  /* ---------- 作品条目 ---------- */
+  var ITEMS = {
+    /* —— 影像:/ —— */
+    panda: {
+      ico: "熊", name: "熊猫团团看世界", type: "AI动画 · 10集 · 优酷少儿", status: "已交付", width: 34,
+      body: function () {
+        return '<div class="crumb">影像:/ 熊猫团团看世界</div>' +
+          mediaSlot("预告片 / 剧照 · 素材待接入（16:9）") +
+          '<p class="dim">受邀为优酷少儿频道制作的 10 集 AI 动画。剧本、美术、生成、成片交付，全流程一个人——在传统动画行业，这是一间工作室的编制。</p>' +
+          figrow([["10 集", "完整交付"], ["约30天", "制作周期"], ["<¥3,000", "直接成本"], ["1 人", "全部编制"]]);
+      }
+    },
+    buzzegg: {
+      ico: "商", name: "商业影像 · Buzzegg", type: "广告 / 内容片 · 2019–2023", status: "已交付", width: 34,
+      body: function () {
+        return '<div class="crumb">影像:/ 商业影像</div>' +
+          mediaSlot("showreel / 代表作剧照 · 待接入") +
+          '<p class="dim">经营内容制作公司期间为品牌制作的广告与内容片。我的角色：从提案到交付的实际操盘，常兼任导演。</p>' +
+          '<div class="clients"><span>NIO 蔚来</span><span>腾讯</span><span>微软 Xbox</span><span>雷蛇 Razer</span></div>';
+      }
+    },
+    genvid: {
+      ico: "生", name: "生成式影像实验", type: "动效 / 生成式 · 实验", status: "实验中", width: 32,
+      body: function () {
+        return '<div class="crumb">影像:/ 生成式影像实验</div>' +
+          mediaSlot("片段拼贴 · 待接入") +
+          '<p class="dim">本地部署 Wan 2.2 等开源模型，ComfyUI / LTX-Video / Veo 组合成片的过程试验。动效、转场、风格迁移的碎片，团团的底层生产线就是从这里长出来的。</p>';
+      }
+    },
+
+    /* —— 网页:/ —— */
+    dictation: {
+      ico: "听", name: "精听室", type: "Web 工具 · 自用中", status: "自用中", width: 40,
+      url: "", /* ← 精听室线上地址填这里 */
+      body: function () {
+        return '<div class="crumb">网页:/ 精听室</div>' +
+          '<p class="dim">把「反复精听 + 听写 + 核对」做成工具：上传音频自动转录，逐句精听播放器，AI 批改并定位错处。做出来治我自己的英语，现在也可以治你的。</p>' +
+          appMount(ITEMS.dictation.url);
+      }
+    },
+    focustree: {
+      ico: "树", name: "Focus Tree", type: "Web 工具 · 未上线", status: "挂起", width: 40,
+      url: "", /* ← Focus Tree 线上地址填这里 */
+      body: function () {
+        return '<div class="crumb">网页:/ Focus Tree</div>' +
+          '<p class="dim">为分散的注意力造的任务树：设定当前重心，AI 评估每个分支的权重，优先级直接长成枝干的粗细。可用，未上线，正在决定它的命运。</p>' +
+          appMount(ITEMS.focustree.url);
+      }
+    },
+    thissite: {
+      ico: "站", name: "本站 · LANG OS", type: "互动网页 · 你正在用它", status: "运行中", width: 30,
+      body: function () {
+        return '<div class="crumb">网页:/ 本站</div>' +
+          '<p>你现在操作的这台桌面，本身就是一个互动网页作品——单文件、无框架、自己写的窗口系统、拖拽、终端、墨迹。</p>' +
+          '<p class="dim">递归了，是吧。这就是我说的「解决问题的默认方式是造一个工具」——连自我介绍都造成了一个能玩的东西。</p>';
+      }
+    },
+
+    /* —— 移动端:/ —— */
+    miniapp: {
+      ico: "码", name: "HTML 预览 · 小程序", type: "微信小程序 · 2026.07 上线", status: "运行中", width: 26,
+      body: function () {
+        return '<div class="crumb">移动端:/ HTML预览小程序</div>' +
+          '<p class="dim">把 AI 生成的 HTML 直接在手机上渲染预览。浏览器进不去微信的世界，所以这扇门要用手机开：</p>' +
+          '<div class="qr-slot">小程序码<br>待贴入</div>' +
+          '<p class="dim" style="text-align:center">微信扫码 · 正在小红书冷启动</p>';
+      }
+    },
+    moreapp: {
+      ico: "＋", name: "更多 App", type: "移动端 · 施工中", status: "挂起", width: 26,
+      body: function () {
+        return '<div class="crumb">移动端:/ 更多</div>' +
+          '<p class="dim">这个磁盘还很空。手上有几个想法在排队，做出来第一时间挂到这里。</p>';
+      }
+    }
+  };
+
+  /* ---------- 三个磁盘 ---------- */
+  var DRIVES = {
+    moving: { ch: "影", label: "影像", en: "IMAGE", vol: "影像:/", items: ["panda", "buzzegg", "genvid"] },
+    web:    { ch: "网", label: "网页", en: "WEB",   vol: "网页:/", items: ["dictation", "focustree", "thissite"] },
+    mobile: { ch: "端", label: "移动端", en: "MOBILE", vol: "移动端:/", items: ["miniapp", "moreapp"] }
+  };
+
+  /* ---------- 网络邻居（社交链接） ---------- */
+  /* ↓ 把 href 换成真实主页地址即可点开 */
+  var NEIGH = [
+    { ico: "红", name: "小红书", addr: "xiaohongshu.com/…", href: "#" },
+    { ico: "X",  name: "X", addr: "x.com/…", href: "#" },
+    { ico: "GH", name: "GitHub", addr: "github.com/LangYY", href: "https://github.com/LangYY" }
+  ];
+
+  /* ---------- 桌面图标顺序：三磁盘 → 网络邻居 →（间隔）→ 系统工具 ---------- */
+  var DESKTOP = [
+    { id: "drive:moving", ch: "影", label: "影像", en: "IMAGE" },
+    { id: "drive:web",    ch: "网", label: "网页", en: "WEB" },
+    { id: "drive:mobile", ch: "端", label: "移动端", en: "MOBILE" },
+    { id: "net",          ch: "邻", label: "网络邻居", en: "ELSEWHERE", cls: "net" },
+    { gap: true },
+    { id: "about",    ch: "关", label: "关于本机", cls: "sys" },
+    { id: "ps",       ch: "程", label: "进程管理器", cls: "sys" },
+    { id: "terminal", ch: "终", label: "终端", cls: "sys" }
+  ];
+
+  var TITLES = {
+    "drive:moving": "影像", "drive:web": "网页", "drive:mobile": "移动端",
+    net: "网络邻居", about: "关于本机", ps: "进程管理器", terminal: "终端"
+  };
+  var PATHS = {
+    "drive:moving": "/vol/影像", "drive:web": "/vol/网页", "drive:mobile": "/vol/移动端",
+    net: "/network", about: "/sys/about", ps: "/sys/proc", terminal: "/sys/term"
+  };
+
+  /* ============================================================
+     视图层：窗口系统
+     ============================================================ */
+  var desk = document.getElementById("desk");
+  var iconsEl = document.getElementById("icons");
+  var dock = document.getElementById("dock");
+  var zTop = 100, cascade = 0;
+  var openWins = {};
+  var isMobile = function () { return window.innerWidth <= 640; };
+
+  /* 桌面图标 */
+  DESKTOP.forEach(function (d) {
+    if (d.gap) { var g = document.createElement("div"); g.className = "group-gap"; iconsEl.appendChild(g); return; }
+    var b = document.createElement("button");
+    b.className = "icon" + (d.cls ? " " + d.cls : "");
+    b.setAttribute("role", "menuitem");
+    b.innerHTML = '<span class="stamp">' + d.ch + (d.en ? '<span class="en">' + d.en + '</span>' : '') + '</span>' +
+                  '<span class="label">' + d.label + '</span>';
+    b.addEventListener("click", function () { openWindow(d.id); });
+    iconsEl.appendChild(b);
+  });
+
+  /* 解析 winId → 窗口规格 */
+  function resolveWindow(winId) {
+    var title, path = PATHS[winId] || "", width = 34, ch = "口", buildHTML;
+
+    if (winId.indexOf("drive:") === 0) {
+      var dk = winId.slice(6), drv = DRIVES[dk];
+      title = drv.label; ch = drv.ch; width = 30;
+      buildHTML = function () {
+        var rows = drv.items.map(function (id) {
+          var it = ITEMS[id];
+          return '<button class="fitem" data-item="' + id + '">' +
+            '<span class="fico">' + it.ico + '</span>' +
+            '<span class="fmeta"><span class="fname">' + it.name + '</span><br>' +
+            '<span class="ftype">' + it.type + '</span></span>' +
+            '<span class="st ' + statusCls(it.status) + '">' + it.status + '</span>' +
+            '<span class="arrow">→</span></button>';
+        }).join("");
+        return '<div class="crumb">' + drv.vol + '　' + drv.en + '</div><div class="folder">' + rows + '</div>';
+      };
+    } else if (winId.indexOf("item:") === 0) {
+      var it2 = ITEMS[winId.slice(5)];
+      title = it2.name; ch = it2.ico; width = it2.width || 34; path = "/item/" + winId.slice(5);
+      buildHTML = it2.body;
+    } else if (winId === "net") {
+      title = "网络邻居"; ch = "邻"; width = 30;
+      buildHTML = function () {
+        var nodes = NEIGH.map(function (n) {
+          var ext = n.href && n.href !== "#";
+          return '<a class="node" href="' + n.href + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' +
+            '<span class="nico">' + n.ico + '</span>' +
+            '<span><span class="nname">' + n.name + '</span><br><span class="naddr">' + n.addr + '</span></span>' +
+            '<span class="nout">' + (ext ? '外链 ↗' : '待接入') + '</span></a>';
+        }).join("");
+        return '<div class="crumb">/network　ELSEWHERE — 我在别处的据点</div><div class="neigh">' + nodes + '</div>';
+      };
+    } else if (winId === "about") {
+      title = "关于本机"; ch = "关"; width = 30;
+      buildHTML = function () {
+        return '<h3>关于这台机器</h3>' +
+          '<p>你好，我是郎懿滢。这里不是主页，是我的桌面。</p>' +
+          '<p>桌面上挂着三个磁盘——<b>影像</b>、<b>网页</b>、<b>移动端</b>，装的是我用 AI 造出来的东西；一处<b>网络邻居</b>通往我在别处的据点。有些作品能直接点开试用，有些还在施工，进程管理器里写得很诚实。</p>' +
+          '<p>经营过一家内容公司五年；现在一个人加 AI，交付过 10 集动画。生物信息学出身，路走歪了，但走得很认真。</p>' +
+          '<p class="dim">终端里藏了几个命令，无聊的话敲敲 <code>help</code>。</p>';
+      };
+    } else if (winId === "ps") {
+      title = "进程管理器"; ch = "程"; width = 36;
+      buildHTML = function () {
+        var rows = [
+          ["1024", "熊猫团团看世界", "已交付", "影像:/", "—", "item:panda"],
+          ["1006", "商业影像 Buzzegg", "已归档", "影像:/", "—", "item:buzzegg"],
+          ["2007", "HTML 预览小程序", "运行中", "移动端:/", "31%", "item:miniapp"],
+          ["2008", "小红书冷启动", "运行中", "移动端:/", "22%", ""],
+          ["1701", "精听室", "自用中", "网页:/", "6%", "item:dictation"],
+          ["1702", "Focus Tree", "挂起", "网页:/", "3%", "item:focustree"],
+          ["1703", "AI 动画流程 Skill", "已崩溃", "—", "0%", ""],
+          ["0812", "医疗 AI 项目（验收）", "前台运行", "—", "29%", ""]
+        ].map(function (r) {
+          return '<tr' + (r[5] ? ' data-open="' + r[5] + '"' : '') + '>' +
+            '<td>' + r[0] + '</td><td>' + r[1] + '</td>' +
+            '<td><span class="st ' + statusCls(r[2]) + '">' + r[2] + '</span></td>' +
+            '<td style="color:var(--ink-soft)">' + r[3] + '</td><td>' + r[4] + '</td></tr>';
+        }).join("");
+        return '<h3>进程管理器</h3><p class="dim">本机所有进程，状态如实。点击带磁盘的进程可打开对应窗口。</p>' +
+          '<table class="ps"><thead><tr><th>PID</th><th>进程</th><th>状态</th><th>磁盘</th><th>心力</th></tr></thead><tbody>' +
+          rows + '</tbody></table>' +
+          '<p class="dim" style="margin-top:0.7rem">「已崩溃」不清理——崩溃日志比成功日志有意思。</p>';
+      };
+    } else if (winId === "terminal") {
+      title = "终端"; ch = "终"; width = 36;
+      buildHTML = function () {
+        return '<div class="term" tabindex="0"><div class="out">LANG OS 终端 · 输入 help 查看可用命令</div>' +
+          '<div class="term-line"><span class="prompt">lang@os:~$&nbsp;</span>' +
+          '<input class="term-input" autocomplete="off" spellcheck="false" aria-label="终端输入"></div></div>';
+      };
+    } else { return null; }
+
+    return { title: title, path: path, width: width, ch: ch, html: buildHTML };
+  }
+
+  function statusCls(s) {
+    if (/崩溃/.test(s)) return "dead";
+    if (/挂起|归档/.test(s)) return "paused";
+    return "";
+  }
+
+  function openWindow(winId) {
+    if (openWins[winId]) { focusWin(openWins[winId]); unminimize(winId); return; }
+    var spec = resolveWindow(winId);
+    if (!spec) return;
+
+    var win = document.createElement("div");
+    win.className = "window";
+    win.style.width = "min(" + spec.width + "rem, calc(100vw - 2rem))";
+    var off = (cascade++ % 6) * 2.1;
+    win.style.left = "calc(50% - " + (spec.width / 2 - off) + "rem)";
+    win.style.top = (3.6 + off * 0.6) + "rem";
+    if (isMobile()) { win.style.left = "0"; win.style.top = "2.1rem"; }
+
+    var bar = document.createElement("div");
+    bar.className = "titlebar";
+    bar.innerHTML = '<span class="t">' + spec.title + '</span><span class="path">' + spec.path + '</span>' +
+      '<span class="spacer"></span>' +
+      '<button class="winbtn min" title="收进 dock" aria-label="最小化"></button>' +
+      '<button class="winbtn close" title="关闭" aria-label="关闭"></button>';
+    var body = document.createElement("div");
+    body.className = "winbody";
+    body.innerHTML = spec.html();
+
+    win.appendChild(bar); win.appendChild(body);
+    win.dataset.win = winId; win.dataset.ch = spec.ch;
+    desk.appendChild(win);
+    openWins[winId] = win;
+    focusWin(win);
+
+    bar.querySelector(".close").addEventListener("click", function () { closeWin(winId); });
+    bar.querySelector(".min").addEventListener("click", function () { minimize(winId); });
+    win.addEventListener("pointerdown", function () { focusWin(win); });
+    enableDrag(win, bar);
+
+    /* 文件夹条目 → 打开作品窗口 */
+    body.querySelectorAll(".fitem[data-item]").forEach(function (el) {
+      el.addEventListener("click", function () { openWindow("item:" + el.dataset.item); });
+    });
+    /* 进程表 → 打开对应窗口 */
+    body.querySelectorAll("tr[data-open]").forEach(function (tr) {
+      tr.addEventListener("click", function () { openWindow(tr.dataset.open); });
+    });
+    /* iframe 挂载 */
+    var mount = body.querySelector(".app-mount");
+    if (mount) {
+      var url = mount.dataset.url;
+      if (url) {
+        var wrap = document.createElement("div"); wrap.className = "appframe-wrap";
+        var f = document.createElement("iframe");
+        f.src = url; f.loading = "lazy"; f.title = spec.title;
+        f.setAttribute("referrerpolicy", "no-referrer");
+        wrap.appendChild(f);
+        var open = document.createElement("a");
+        open.className = "btn-launch"; open.href = url; open.target = "_blank"; open.rel = "noopener";
+        open.textContent = "在新标签全屏打开 ↗";
+        mount.replaceWith(wrap); wrap.after(open);
+      } else {
+        var empty = document.createElement("div");
+        empty.className = "frame-empty";
+        empty.innerHTML = "线上地址待接入<br>部署 / 备案完成后，这里就能直接试用";
+        mount.replaceWith(empty);
+      }
+    }
+    /* 终端 */
+    var term = body.querySelector(".term");
+    if (term) initTerm(term);
+  }
+
+  function closeWin(id) { var w = openWins[id]; if (w) { w.remove(); delete openWins[id]; removeDock(id); } }
+  function focusWin(win) {
+    document.querySelectorAll(".window").forEach(function (w) { w.classList.remove("focused"); });
+    win.classList.add("focused"); win.style.zIndex = ++zTop;
+  }
+  function minimize(id) {
+    var w = openWins[id]; if (!w) return;
+    w.style.display = "none";
+    if (!dock.querySelector('[data-dock="' + id + '"]')) {
+      var b = document.createElement("button");
+      b.dataset.dock = id; b.title = openWins[id].dataset.win;
+      b.textContent = w.dataset.ch;
+      b.addEventListener("click", function () { unminimize(id); });
+      dock.appendChild(b);
+    }
+  }
+  function unminimize(id) { var w = openWins[id]; if (!w) return; w.style.display = ""; focusWin(w); removeDock(id); }
+  function removeDock(id) { var d = dock.querySelector('[data-dock="' + id + '"]'); if (d) d.remove(); }
+
+  /* 拖拽 */
+  function enableDrag(win, bar) {
+    var sx, sy, ox, oy, dragging = false;
+    bar.addEventListener("pointerdown", function (e) {
+      if (e.target.closest(".winbtn") || isMobile()) return;
+      dragging = true; sx = e.clientX; sy = e.clientY;
+      var r = win.getBoundingClientRect(); ox = r.left; oy = r.top;
+      bar.setPointerCapture(e.pointerId);
+    });
+    bar.addEventListener("pointermove", function (e) {
+      if (!dragging) return;
+      win.style.left = (ox + e.clientX - sx) + "px";
+      win.style.top = Math.max(2.1 * 16, oy + e.clientY - sy) + "px";
+    });
+    bar.addEventListener("pointerup", function () { dragging = false; });
+    bar.addEventListener("pointercancel", function () { dragging = false; });
+  }
+
+  /* 终端 */
+  function initTerm(term) {
+    var input = term.querySelector(".term-input");
+    var line = term.querySelector(".term-line");
+    term.addEventListener("click", function () { input.focus(); });
+    function print(html) { var d = document.createElement("div"); d.className = "out"; d.innerHTML = html; term.insertBefore(d, line); }
+    input.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter") return;
+      var cmd = input.value.trim();
+      print('<span class="prompt">lang@os:~$</span> <span class="cmd-echo">' + esc(cmd) + "</span>");
+      if (cmd) run(cmd, print, term);
+      input.value = ""; term.scrollTop = term.scrollHeight;
+    });
+  }
+  function run(cmd, print, term) {
+    var parts = cmd.split(/\s+/), c = parts[0].toLowerCase();
+    switch (c) {
+      case "help":
+        print("可用命令：\n  whoami        我是谁\n  ls            列出磁盘与作品\n  open <名字>   打开窗口，如 open 影像 / open 精听室\n  ps            查看全部进程\n  date          现在几点\n  clear         清屏\n  sudo hire     （需要权限）"); break;
+      case "whoami": print("郎懿滢。一个人，从想法到交付。\n默认解法：造一个工具。"); break;
+      case "ls":
+        print("磁盘：影像:/  网页:/  移动端:/     网络邻居：小红书 X GitHub\n影像:/   熊猫团团  商业影像  生成式影像实验\n网页:/   精听室  FocusTree  本站\n移动端:/ HTML预览小程序  更多App"); break;
+      case "ps":
+        print("PID 1024 熊猫团团看世界  已交付\nPID 2007 HTML预览小程序  运行中\nPID 1701 精听室          自用中\nPID 1702 FocusTree       挂起\nPID 1703 动画流程Skill   已崩溃\nPID 0812 医疗AI项目      前台运行"); break;
+      case "date": print(new Date().toLocaleString("zh-CN")); break;
+      case "clear":
+        term.querySelectorAll(".out").forEach(function (o) { o.remove(); }); break;
+      case "open":
+        var name = parts.slice(1).join("").toLowerCase();
+        var map = {
+          "影像": "drive:moving", "网页": "drive:web", "移动端": "drive:mobile",
+          "网络邻居": "net", "邻居": "net", "社交": "net",
+          "熊猫团团": "item:panda", "熊猫": "item:panda", "团团": "item:panda",
+          "商业影像": "item:buzzegg", "buzzegg": "item:buzzegg",
+          "精听室": "item:dictation", "focustree": "item:focustree", "树": "item:focustree",
+          "本站": "item:thissite", "小程序": "item:miniapp", "html预览": "item:miniapp",
+          "关于": "about", "进程": "ps", "终端": "terminal"
+        };
+        var id = map[name];
+        if (id) { openWindow(id); print("正在打开 " + name + " …"); }
+        else print("open: 找不到「" + esc(name) + "」。试试 ls"); break;
+      case "sudo":
+        if (/hire|招我|offer/i.test(cmd))
+          print('权限确认通过。\n<span style="color:#F6F3EA">联系方式已解锁：</span><a href="mailto:lang.soda@gmail.com" style="color:#7FC4B4">lang.soda@gmail.com</a>\n（这个命令的存在，说明这台机器的主人对新的可能性保持开机状态）');
+        else print("sudo: 想清楚再用 root 权限。"); break;
+      case "rm": print("rm: 拒绝执行。这台机器上连「已崩溃」的进程都舍不得删。"); break;
+      case "exit": print("exit: 这里是乐园，不设出口。关掉窗口就好。"); break;
+      default:
+        print(esc(c) + ": 命令不存在。输入 help 看看有什么。");
+    }
+  }
+
+  /* ---------- 墨迹 ---------- */
+  var canvas = document.getElementById("inktrail"), ctx = canvas.getContext("2d");
+  var drops = [], reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function sizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  sizeCanvas(); window.addEventListener("resize", sizeCanvas);
+  if (!reduced) {
+    window.addEventListener("pointermove", function (e) {
+      drops.push({ x: e.clientX, y: e.clientY, r: 1.5 + Math.random() * 2.5, a: 0.22 });
+      if (drops.length > 120) drops.shift();
+    });
+    (function tick() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (var i = 0; i < drops.length; i++) {
+        var d = drops[i]; d.a *= 0.965; d.r += 0.08;
+        if (d.a < 0.005) continue;
+        ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(127, 196, 180," + d.a + ")"; ctx.fill();
+      }
+      requestAnimationFrame(tick);
+    })();
+  }
+
+  /* ---------- 时钟 ---------- */
+  var clock = document.getElementById("clock");
+  function tickClock() { var n = new Date(); clock.textContent = String(n.getHours()).padStart(2, "0") + ":" + String(n.getMinutes()).padStart(2, "0"); }
+  tickClock(); setInterval(tickClock, 15000);
+
+  /* ---------- 开机 ---------- */
+  var boot = document.getElementById("boot"), log = document.getElementById("bootlog");
+  var lines = [
+    ["LANG OS v0.2 — 一个人的操作系统", ""],
+    ["挂载磁盘 影像:/ 网页:/ 移动端:/ ……", "ok"],
+    ["连接网络邻居 小红书 · X · GitHub ……", "ok"],
+    ["检查未完成项目…… 若干", "warn"],
+    ["启动心力管理进程…… 恢复中", "ok"],
+    ["欢迎回来。", ""]
+  ];
+  function endBoot() { boot.classList.add("off"); setTimeout(function () { boot.remove(); }, 600); if (!isMobile()) openWindow("about"); }
+  boot.addEventListener("click", endBoot);
+  if (reduced) { endBoot(); }
+  else {
+    var i = 0;
+    (function next() {
+      if (!document.body.contains(boot) || boot.classList.contains("off")) return;
+      if (i >= lines.length) { setTimeout(endBoot, 700); return; }
+      var d = document.createElement("div");
+      if (lines[i][1]) d.className = lines[i][1];
+      d.textContent = lines[i][0]; log.appendChild(d); i++;
+      setTimeout(next, 380);
+    })();
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,38 @@
+name: Deploy to ECS
+
+# 每次推送到 main 分支，自动把 site/ 同步到 ECS 的网站根目录。
+# 需要在仓库 Settings → Secrets and variables → Actions 里配置 4 个 secret：
+#   ECS_HOST     ECS 公网 IP 或域名
+#   ECS_USER     登录用户名（如 root 或 www）
+#   ECS_SSH_KEY  该用户的 SSH 私钥全文（-----BEGIN ... END-----）
+#   ECS_PORT     SSH 端口（默认 22，可省则改下面默认值）
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync site to ECS
+        env:
+          ECS_HOST: ${{ secrets.ECS_HOST }}
+          ECS_USER: ${{ secrets.ECS_USER }}
+          ECS_PORT: ${{ secrets.ECS_PORT }}
+          ECS_SSH_KEY: ${{ secrets.ECS_SSH_KEY }}
+        run: |
+          set -e
+          mkdir -p ~/.ssh
+          printf '%s\n' "$ECS_SSH_KEY" > ~/.ssh/id_deploy
+          chmod 600 ~/.ssh/id_deploy
+          PORT="${ECS_PORT:-22}"
+          ssh-keyscan -p "$PORT" -H "$ECS_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+          rsync -avz --delete \
+            -e "ssh -i ~/.ssh/id_deploy -p $PORT" \
+            site/ "$ECS_USER@$ECS_HOST:/var/www/langos/"
+          echo "Deployed site/ -> /var/www/langos/ on $ECS_HOST"
