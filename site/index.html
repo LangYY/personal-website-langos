@@ -397,14 +397,14 @@
     }).join("") + '</div>';
   };
   var appMount = function (url) { return '<div class="app-mount" data-url="' + (url || "") + '"></div>'; };
-  var shot = function (src, alt) { return '<img class="shot" src="' + src + '" alt="' + esc(alt || "") + '" loading="lazy">'; };
+  var shot = function (src, alt) { return '<img class="shot" src="' + src + '" alt="' + esc(alt || "") + '">'; };
   var gallery = function (arr) {
     return '<div class="gallery">' + arr.map(function (g) {
-      return '<figure><img src="' + g[0] + '" alt="' + esc(g[1] || "") + '" loading="lazy"><figcaption>' + esc(g[1] || "") + '</figcaption></figure>';
+      return '<figure><img src="' + g[0] + '" alt="' + esc(g[1] || "") + '"><figcaption>' + esc(g[1] || "") + '</figcaption></figure>';
     }).join("") + '</div>';
   };
   var qr = function (src, cap) {
-    return '<div class="qr-real"><img src="' + src + '" alt="小程序码" loading="lazy"><div class="qr-cap">' + cap + '</div></div>';
+    return '<div class="qr-real"><img src="' + src + '" alt="小程序码"><div class="qr-cap">' + cap + '</div></div>';
   };
   var linkRow = function (arr) {
     return '<div class="linkrow">' + arr.map(function (l) {
