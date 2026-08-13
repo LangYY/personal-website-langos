@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="description" content="LANG OS——郎懿滢的个人操作系统。三个磁盘装作品，一处网络邻居通往别处。工具可点开试用。">
-<title>LANG OS · 郎懿滢</title>
+<meta name="description" content="LANG OS——郎懿莹的个人操作系统。三个磁盘装作品，一处网络邻居通往别处。工具可点开试用。">
+<title>LANG OS · 郎懿莹</title>
 <style>
   :root {
     --desk: #10201C;
@@ -305,6 +305,18 @@
   .clients { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.6rem; }
   .clients span { font-family: var(--mono); font-size: 0.7rem; border: 1px solid var(--paper-edge); padding: 0.1rem 0.5rem; border-radius: 3px; color: var(--ink-soft); }
 
+  /* 图片 / 画廊 / 二维码 / 外链按钮组 */
+  .shot { display: block; width: 100%; border: 1px solid var(--paper-edge); border-radius: 4px; margin: 0.6rem 0; }
+  .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin: 0.7rem 0; }
+  .gallery figure { margin: 0; }
+  .gallery img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; border: 1px solid var(--paper-edge); border-radius: 4px; }
+  .gallery figcaption { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.04em; color: var(--ink-soft); margin-top: 0.2rem; }
+  .qr-real { display: flex; flex-direction: column; align-items: center; margin: 0.9rem auto 0.4rem; }
+  .qr-real img { width: 11rem; height: 11rem; object-fit: contain; background: #fff; border: 2px solid var(--seal); border-radius: 8px; padding: 0.4rem; transform: rotate(-2deg); }
+  .qr-real .qr-cap { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; color: var(--seal); margin-top: 0.7rem; text-align: center; }
+  .linkrow { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0.7rem 0 0.2rem; }
+  .linkrow .btn-launch { margin-top: 0; }
+
   /* 状态章 */
   .st { font-size: 0.66rem; letter-spacing: 0.08em; padding: 0.1rem 0.45rem; border-radius: 999px; border: 1px solid var(--teal); color: var(--teal); white-space: nowrap; font-family: var(--mono); }
   .st.paused { border-color: var(--ink-soft); color: var(--ink-soft); }
@@ -385,54 +397,92 @@
     }).join("") + '</div>';
   };
   var appMount = function (url) { return '<div class="app-mount" data-url="' + (url || "") + '"></div>'; };
+  var shot = function (src, alt) { return '<img class="shot" src="' + src + '" alt="' + esc(alt || "") + '" loading="lazy">'; };
+  var gallery = function (arr) {
+    return '<div class="gallery">' + arr.map(function (g) {
+      return '<figure><img src="' + g[0] + '" alt="' + esc(g[1] || "") + '" loading="lazy"><figcaption>' + esc(g[1] || "") + '</figcaption></figure>';
+    }).join("") + '</div>';
+  };
+  var qr = function (src, cap) {
+    return '<div class="qr-real"><img src="' + src + '" alt="小程序码" loading="lazy"><div class="qr-cap">' + cap + '</div></div>';
+  };
+  var linkRow = function (arr) {
+    return '<div class="linkrow">' + arr.map(function (l) {
+      return '<a class="btn-launch" href="' + l[1] + '" target="_blank" rel="noopener">' + l[0] + ' ↗</a>';
+    }).join("") + '</div>';
+  };
 
   /* ---------- 作品条目 ---------- */
   var ITEMS = {
     /* —— 影像:/ —— */
     panda: {
-      ico: "熊", name: "熊猫团团看世界", type: "AI动画 · 10集 · 优酷少儿", status: "已交付", width: 34,
+      ico: "熊", name: "熊猫团团认世界", type: "AI动画 · 10集 · 优酷少儿", status: "已上线", width: 38,
+      url: "https://v.youku.com/v_show/id_XNjUyMjk5NzAxNg==.html",
       body: function () {
-        return '<div class="crumb">影像:/ 熊猫团团看世界</div>' +
-          mediaSlot("预告片 / 剧照 · 素材待接入（16:9）") +
-          '<p class="dim">受邀为优酷少儿频道制作的 10 集 AI 动画。剧本、美术、生成、成片交付，全流程一个人——在传统动画行业，这是一间工作室的编制。</p>' +
-          figrow([["10 集", "完整交付"], ["约30天", "制作周期"], ["<¥3,000", "直接成本"], ["1 人", "全部编制"]]);
+        return '<div class="crumb">影像:/ 熊猫团团认世界</div>' +
+          '<p class="dim">受邀为优酷少儿频道制作的 10 集 AI 动画，儿童生活百科启蒙系列，已在优酷上线。剧本分镜、首尾帧提示词、视频生成到成片，全流程一个人——底层是我自制的一套 Claude Skill 工作流，串起 Lovart、Tapnow、Flow 完成制作。</p>' +
+          gallery([
+            ["assets/panda-1.jpg", "住宅区人行道 · 场景"],
+            ["assets/panda-2.jpg", "分镜 · 拿甜甜圈"],
+            ["assets/panda-3.jpg", "分镜 · 收银区背景"],
+            ["assets/panda-4.jpg", "角色与画面设定"]
+          ]) +
+          figrow([["10 集", "已上线优酷"], ["约3分钟", "单集时长"], ["约20小时", "单集制作"], ["1 人", "全部编制"]]) +
+          linkRow([["优酷观看", ITEMS.panda.url]]);
       }
     },
     buzzegg: {
-      ico: "商", name: "商业影像 · Buzzegg", type: "广告 / 内容片 · 2019–2023", status: "已交付", width: 34,
+      ico: "商", name: "商业影像 · Buzzegg", type: "广告 / 内容片 · 2019–2024", status: "已归档", width: 36,
       body: function () {
         return '<div class="crumb">影像:/ 商业影像</div>' +
-          mediaSlot("showreel / 代表作剧照 · 待接入") +
-          '<p class="dim">经营内容制作公司期间为品牌制作的广告与内容片。我的角色：从提案到交付的实际操盘，常兼任导演。</p>' +
-          '<div class="clients"><span>NIO 蔚来</span><span>腾讯</span><span>微软 Xbox</span><span>雷蛇 Razer</span></div>';
+          '<p class="dim">经营内容制作公司 Buzzegg 期间为品牌制作的广告与内容片。我的角色：从提案到交付的实际操盘，常兼任导演。下面几支可在新片场查看。</p>' +
+          '<div class="clients"><span>CHERRY</span><span>微软 Surface</span><span>福特 Ford</span><span>NIO 蔚来</span><span>腾讯</span><span>雷蛇 Razer</span></div>' +
+          linkRow([
+            ["CHERRY 70周年 TVC", "https://www.xinpianchang.com/a12492855"],
+            ["微软 Surface Pro 9", "https://www.xinpianchang.com/a12334071"],
+            ["福特 Mustang Mach-E", "https://www.xinpianchang.com/a12334050"],
+            ["新片场作品集", "https://www.xinpianchang.com/u13462261"]
+          ]);
       }
     },
     genvid: {
-      ico: "生", name: "生成式影像实验", type: "动效 / 生成式 · 实验", status: "实验中", width: 32,
+      ico: "生", name: "生成式影像实验", type: "动效 / 生成式 · 实验", status: "实验中", width: 34,
       body: function () {
         return '<div class="crumb">影像:/ 生成式影像实验</div>' +
-          mediaSlot("片段拼贴 · 待接入") +
-          '<p class="dim">本地部署 Wan 2.2 等开源模型，ComfyUI / LTX-Video / Veo 组合成片的过程试验。动效、转场、风格迁移的碎片，团团的底层生产线就是从这里长出来的。</p>';
+          '<p class="dim">本地部署 Wan 2.2 等开源模型，ComfyUI / LTX-Video / Veo 组合成片的过程试验。动效、转场、风格迁移的碎片，团团的底层生产线就是从这里长出来的。</p>' +
+          gallery([
+            ["assets/comfypilot-1.jpg", "ComfyPilot · 生成流程"],
+            ["assets/comfypilot-2.jpg", "ComfyPilot · 节点编排"]
+          ]);
       }
     },
 
     /* —— 网页:/ —— */
     dictation: {
-      ico: "听", name: "精听室", type: "Web 工具 · 自用中", status: "自用中", width: 40,
-      url: "", /* ← 精听室线上地址填这里 */
+      ico: "听", name: "精听室", type: "Web 工具 · 试用中", status: "试用中", width: 42,
+      url: "https://dictation.buzzegg.cn/",
       body: function () {
         return '<div class="crumb">网页:/ 精听室</div>' +
-          '<p class="dim">把「反复精听 + 听写 + 核对」做成工具：上传音频自动转录，逐句精听播放器，AI 批改并定位错处。做出来治我自己的英语，现在也可以治你的。</p>' +
+          '<p class="dim">基于本地音频与在线视频链接的轻量英语精听工具：逐句播放器，反复精听 + 听写 + 核对。独立开发、已部署，目前小范围试用。做出来治我自己的英语，现在也可以治你的。</p>' +
           appMount(ITEMS.dictation.url);
       }
     },
     focustree: {
-      ico: "树", name: "Focus Tree", type: "Web 工具 · 未上线", status: "挂起", width: 40,
-      url: "", /* ← Focus Tree 线上地址填这里 */
+      ico: "树", name: "Focus Tree", type: "Web 工具 · 已上线", status: "运行中", width: 42,
+      url: "https://focus.buzzegg.cn/",
       body: function () {
         return '<div class="crumb">网页:/ Focus Tree</div>' +
-          '<p class="dim">为分散的注意力造的任务树：设定当前重心，AI 评估每个分支的权重，优先级直接长成枝干的粗细。可用，未上线，正在决定它的命运。</p>' +
+          '<p class="dim">给自由职业者和内容创作者的「外脑」：把目标、项目、进展和想法放进同一个结构。AI 按目标与状态重算各项目权重，用树状结构显示当前重心，帮你判断下一步、给新想法找到位置。</p>' +
           appMount(ITEMS.focustree.url);
+      }
+    },
+    framesonata: {
+      ico: "谱", name: "Frame Sonata", type: "Web 工具 · 已上线", status: "运行中", width: 42,
+      url: "https://frame-sonata.buzzegg.cn/",
+      body: function () {
+        return '<div class="crumb">网页:/ Frame Sonata</div>' +
+          '<p class="dim">给导演和制片的分镜工作台：把 storyboard / pitch deck 的整理、演示和制作推进串到一起，记录场景、道具等制作信息，把重复整理交给工具和 AI。已完成产品结构与界面迭代，现已上线，按商业化产品持续迭代。</p>' +
+          appMount(ITEMS.framesonata.url);
       }
     },
     thissite: {
@@ -446,19 +496,29 @@
 
     /* —— 移动端:/ —— */
     miniapp: {
-      ico: "码", name: "HTML 预览 · 小程序", type: "微信小程序 · 2026.07 上线", status: "运行中", width: 26,
+      ico: "码", name: "HTML 预览 · 小程序", type: "微信小程序 · 2026.07 上线", status: "运行中", width: 30,
       body: function () {
         return '<div class="crumb">移动端:/ HTML预览小程序</div>' +
-          '<p class="dim">把 AI 生成的 HTML 直接在手机上渲染预览。浏览器进不去微信的世界，所以这扇门要用手机开：</p>' +
-          '<div class="qr-slot">小程序码<br>待贴入</div>' +
-          '<p class="dim" style="text-align:center">微信扫码 · 正在小红书冷启动</p>';
+          '<p class="dim">AI 让人人都能做 HTML slides、网页、小工具，但分享很麻烦：微信 / 飞书打不开 HTML，转 PDF 又丢动效。我反复被这个问题绊住，于是做了「HTML 预览」——免部署，直接在手机上渲染分享，还能跑 HTML 小游戏、小工具、单页应用。</p>' +
+          qr("assets/qr-html.jpg", "微信扫码 · 正在小红书冷启动");
       }
     },
-    moreapp: {
-      ico: "＋", name: "更多 App", type: "移动端 · 施工中", status: "挂起", width: 26,
+    iglink: {
+      ico: "存", name: "IG链接存图 · 小程序", type: "微信小程序 · 工具", status: "运行中", width: 30,
       body: function () {
-        return '<div class="crumb">移动端:/ 更多</div>' +
-          '<p class="dim">这个磁盘还很空。手上有几个想法在排队，做出来第一时间挂到这里。</p>';
+        return '<div class="crumb">移动端:/ IG链接存图</div>' +
+          '<p class="dim">追星过程中顺手做的小工具：贴一个链接，经由部署在 Google Cloud 的 yt-dlp 解析、再回传阿里云 ECS，把图 / 视频存下来。方便大家。</p>' +
+          qr("assets/qr-iglink.jpg", "微信扫码使用");
+      }
+    },
+    shunbian: {
+      ico: "顺", name: "顺便", type: "轻应用 · 已上线", status: "运行中", width: 42,
+      url: "https://shunbian-853b693f.eazo.dev/",
+      body: function () {
+        return '<div class="crumb">移动端:/ 顺便</div>' +
+          '<p class="dim">生活里有一类「有机会可以做，但不值得专门安排」的事：路过肯德基想起疯狂星期四、刚好在附近的展、下次经过顺手退个货。它们进不了 Calendar / Todo，收藏在各处，到了合适时机又想不起来。</p>' +
+          '<p class="dim">顺便要解决的不是「附近有什么可以做」，而是「当机会出现时，把你自己曾经产生过的意图重新想起来」。</p>' +
+          appMount(ITEMS.shunbian.url);
       }
     }
   };
@@ -466,15 +526,14 @@
   /* ---------- 三个磁盘 ---------- */
   var DRIVES = {
     moving: { ch: "影", label: "影像", en: "IMAGE", vol: "影像:/", items: ["panda", "buzzegg", "genvid"] },
-    web:    { ch: "网", label: "网页", en: "WEB",   vol: "网页:/", items: ["dictation", "focustree", "thissite"] },
-    mobile: { ch: "端", label: "移动端", en: "MOBILE", vol: "移动端:/", items: ["miniapp", "moreapp"] }
+    web:    { ch: "网", label: "网页", en: "WEB",   vol: "网页:/", items: ["dictation", "focustree", "framesonata", "thissite"] },
+    mobile: { ch: "端", label: "移动端", en: "MOBILE", vol: "移动端:/", items: ["miniapp", "iglink", "shunbian"] }
   };
 
   /* ---------- 网络邻居（社交链接） ---------- */
-  /* ↓ 把 href 换成真实主页地址即可点开 */
   var NEIGH = [
-    { ico: "红", name: "小红书", addr: "xiaohongshu.com/…", href: "#" },
-    { ico: "X",  name: "X", addr: "x.com/…", href: "#" },
+    { ico: "红", name: "小红书", addr: "xiaohongshu.com", href: "https://xhslink.cn/m/9tKm5K7ACjg" },
+    { ico: "X",  name: "X", addr: "x.com/LangYi31007", href: "https://x.com/LangYi31007" },
     { ico: "GH", name: "GitHub", addr: "github.com/LangYY", href: "https://github.com/LangYY" }
   ];
 
@@ -560,7 +619,7 @@
       title = "关于本机"; ch = "关"; width = 30;
       buildHTML = function () {
         return '<h3>关于这台机器</h3>' +
-          '<p>你好，我是郎懿滢。这里不是主页，是我的桌面。</p>' +
+          '<p>你好，我是郎懿莹。这里不是主页，是我的桌面。</p>' +
           '<p>桌面上挂着三个磁盘——<b>影像</b>、<b>网页</b>、<b>移动端</b>，装的是我用 AI 造出来的东西；一处<b>网络邻居</b>通往我在别处的据点。有些作品能直接点开试用，有些还在施工，进程管理器里写得很诚实。</p>' +
           '<p>经营过一家内容公司五年；现在一个人加 AI，交付过 10 集动画。生物信息学出身，路走歪了，但走得很认真。</p>' +
           '<p class="dim">终端里藏了几个命令，无聊的话敲敲 <code>help</code>。</p>';
@@ -569,13 +628,15 @@
       title = "进程管理器"; ch = "程"; width = 36;
       buildHTML = function () {
         var rows = [
-          ["1024", "熊猫团团看世界", "已交付", "影像:/", "—", "item:panda"],
+          ["1024", "熊猫团团认世界", "已上线", "影像:/", "—", "item:panda"],
           ["1006", "商业影像 Buzzegg", "已归档", "影像:/", "—", "item:buzzegg"],
           ["2007", "HTML 预览小程序", "运行中", "移动端:/", "31%", "item:miniapp"],
+          ["2009", "顺便", "运行中", "移动端:/", "18%", "item:shunbian"],
           ["2008", "小红书冷启动", "运行中", "移动端:/", "22%", ""],
-          ["1701", "精听室", "自用中", "网页:/", "6%", "item:dictation"],
-          ["1702", "Focus Tree", "挂起", "网页:/", "3%", "item:focustree"],
-          ["1703", "AI 动画流程 Skill", "已崩溃", "—", "0%", ""],
+          ["1701", "精听室", "试用中", "网页:/", "6%", "item:dictation"],
+          ["1702", "Focus Tree", "运行中", "网页:/", "9%", "item:focustree"],
+          ["1704", "Frame Sonata", "运行中", "网页:/", "12%", "item:framesonata"],
+          ["1703", "AI 动画流程 Skill v1", "已崩溃", "—", "0%", ""],
           ["0812", "医疗 AI 项目（验收）", "前台运行", "—", "29%", ""]
         ].map(function (r) {
           return '<tr' + (r[5] ? ' data-open="' + r[5] + '"' : '') + '>' +
@@ -730,11 +791,11 @@
     switch (c) {
       case "help":
         print("可用命令：\n  whoami        我是谁\n  ls            列出磁盘与作品\n  open <名字>   打开窗口，如 open 影像 / open 精听室\n  ps            查看全部进程\n  date          现在几点\n  clear         清屏\n  sudo hire     （需要权限）"); break;
-      case "whoami": print("郎懿滢。一个人，从想法到交付。\n默认解法：造一个工具。"); break;
+      case "whoami": print("郎懿莹。一个人，从想法到交付。\n默认解法：造一个工具。"); break;
       case "ls":
-        print("磁盘：影像:/  网页:/  移动端:/     网络邻居：小红书 X GitHub\n影像:/   熊猫团团  商业影像  生成式影像实验\n网页:/   精听室  FocusTree  本站\n移动端:/ HTML预览小程序  更多App"); break;
+        print("磁盘：影像:/  网页:/  移动端:/     网络邻居：小红书 X GitHub\n影像:/   熊猫团团  商业影像  生成式影像实验\n网页:/   精听室  FocusTree  FrameSonata  本站\n移动端:/ HTML预览  IG存图  顺便"); break;
       case "ps":
-        print("PID 1024 熊猫团团看世界  已交付\nPID 2007 HTML预览小程序  运行中\nPID 1701 精听室          自用中\nPID 1702 FocusTree       挂起\nPID 1703 动画流程Skill   已崩溃\nPID 0812 医疗AI项目      前台运行"); break;
+        print("PID 1024 熊猫团团认世界  已上线\nPID 2007 HTML预览小程序  运行中\nPID 2009 顺便            运行中\nPID 1701 精听室          试用中\nPID 1702 FocusTree       运行中\nPID 1704 FrameSonata     运行中\nPID 1703 动画流程Skillv1 已崩溃\nPID 0812 医疗AI项目      前台运行"); break;
       case "date": print(new Date().toLocaleString("zh-CN")); break;
       case "clear":
         term.querySelectorAll(".out").forEach(function (o) { o.remove(); }); break;
@@ -744,9 +805,12 @@
           "影像": "drive:moving", "网页": "drive:web", "移动端": "drive:mobile",
           "网络邻居": "net", "邻居": "net", "社交": "net",
           "熊猫团团": "item:panda", "熊猫": "item:panda", "团团": "item:panda",
-          "商业影像": "item:buzzegg", "buzzegg": "item:buzzegg",
+          "商业影像": "item:buzzegg", "buzzegg": "item:buzzegg", "生成式影像实验": "item:genvid",
           "精听室": "item:dictation", "focustree": "item:focustree", "树": "item:focustree",
-          "本站": "item:thissite", "小程序": "item:miniapp", "html预览": "item:miniapp",
+          "framesonata": "item:framesonata", "framesonata本": "item:framesonata", "谱": "item:framesonata",
+          "本站": "item:thissite", "小程序": "item:miniapp", "html预览": "item:miniapp", "html": "item:miniapp",
+          "ig存图": "item:iglink", "ig": "item:iglink", "存图": "item:iglink",
+          "顺便": "item:shunbian",
           "关于": "about", "进程": "ps", "终端": "terminal"
         };
         var id = map[name];
