@@ -530,7 +530,6 @@
     { id: "drive:moving", ch: "影", label: "影像", en: "IMAGE" },
     { id: "drive:web",    ch: "网", label: "网页", en: "WEB" },
     { id: "drive:mobile", ch: "端", label: "移动端", en: "MOBILE" },
-    { id: "net",          ch: "邻", label: "网络邻居", en: "ELSEWHERE", cls: "net" },
     { gap: true },
     { id: "about",    ch: "关", label: "关于本机", cls: "sys" },
     { id: "ps",       ch: "程", label: "进程管理器", cls: "sys" },
@@ -539,11 +538,11 @@
 
   var TITLES = {
     "drive:moving": "影像", "drive:web": "网页", "drive:mobile": "移动端",
-    net: "网络邻居", about: "关于本机", ps: "进程管理器", terminal: "终端"
+    about: "关于本机", ps: "进程管理器", terminal: "终端"
   };
   var PATHS = {
     "drive:moving": "/vol/影像", "drive:web": "/vol/网页", "drive:mobile": "/vol/移动端",
-    net: "/network", about: "/sys/about", ps: "/sys/proc", terminal: "/sys/term"
+    about: "/sys/about", ps: "/sys/proc", terminal: "/sys/term"
   };
 
   /* ============================================================
@@ -591,8 +590,8 @@
       var it2 = ITEMS[winId.slice(5)];
       title = it2.name; ch = it2.ico; width = it2.width || 34; path = "/item/" + winId.slice(5);
       buildHTML = it2.body;
-    } else if (winId === "net") {
-      title = "网络邻居"; ch = "邻"; width = 30;
+    } else if (winId === "about") {
+      title = "关于本机"; ch = "关"; width = 32;
       buildHTML = function () {
         var nodes = NEIGH.map(function (n) {
           var ext = n.href && n.href !== "#";
@@ -601,16 +600,13 @@
             '<span><span class="nname">' + n.name + '</span><br><span class="naddr">' + n.addr + '</span></span>' +
             '<span class="nout">' + (ext ? '外链 ↗' : '待接入') + '</span></a>';
         }).join("");
-        return '<div class="crumb">/network　ELSEWHERE — 我在别处的据点</div><div class="neigh">' + nodes + '</div>';
-      };
-    } else if (winId === "about") {
-      title = "关于本机"; ch = "关"; width = 30;
-      buildHTML = function () {
         return '<h3>关于这台机器</h3>' +
           '<p>你好，我是郎懿莹。这里不是主页，是我的桌面。</p>' +
-          '<p>桌面上挂着三个磁盘——<b>影像</b>、<b>网页</b>、<b>移动端</b>，装的是我用 AI 造出来的东西；一处<b>网络邻居</b>通往我在别处的据点。有些作品能直接点开试用，有些还在施工，进程管理器里写得很诚实。</p>' +
+          '<p>桌面上挂着三个磁盘——<b>影像</b>、<b>网页</b>、<b>移动端</b>，装的是我用 AI 造出来的东西；有些作品能直接点开试用，有些还在施工，进程管理器里写得很诚实。</p>' +
           '<p>联系我：<a href="mailto:lang.soda@gmail.com" style="color:var(--seal)">lang.soda@gmail.com</a></p>' +
-          '<p class="dim">终端里藏了几个命令，无聊的话敲敲 <code>help</code>。</p>';
+          '<div class="crumb" style="margin-top:0.9rem">别处　ELSEWHERE — 我在别处的据点</div>' +
+          '<div class="neigh">' + nodes + '</div>' +
+          '<p class="dim" style="margin-top:0.8rem">终端里藏了几个命令，无聊的话敲敲 <code>help</code>。</p>';
       };
     } else if (winId === "ps") {
       title = "进程管理器"; ch = "程"; width = 36;
@@ -789,7 +785,7 @@
         var name = parts.slice(1).join("").toLowerCase();
         var map = {
           "影像": "drive:moving", "网页": "drive:web", "移动端": "drive:mobile",
-          "网络邻居": "net", "邻居": "net", "社交": "net",
+          "网络邻居": "about", "邻居": "about", "社交": "about",
           "熊猫团团": "item:panda", "熊猫": "item:panda", "团团": "item:panda",
           "商业影像": "item:buzzegg", "buzzegg": "item:buzzegg",
           "精听室": "item:dictation", "focustree": "item:focustree", "树": "item:focustree",
