@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
+<base href="/">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="LANG OS——一个人的操作系统。三个磁盘装作品，工具可点开试用。">
 <title>LANG OS · 一个人的操作系统</title>
@@ -413,9 +414,10 @@
 
 <div id="menubar">
   <span class="os-name">LANG<span class="seal-dot">·</span>OS <span class="hide-sm">v0.2</span></span>
-  <span class="hide-sm">一个人的操作系统</span>
+  <span id="tagline" class="hide-sm"></span>
   <span class="spacer"></span>
-  <span id="heart" class="hide-sm">心力 ▓▓▓▓▓░░ 恢复中</span>
+  <span id="heart" class="hide-sm"></span>
+  <a id="langtoggle" href="#" role="button"></a>
   <a href="mailto:lang.soda@gmail.com">lang.soda@gmail.com</a>
   <span id="clock"></span>
 </div>
@@ -428,9 +430,15 @@
   "use strict";
 
   /* ============================================================
+     语言：由路径决定 /en → 英文，其余 → 中文；L(zh,en) 取当前语言串
+     ============================================================ */
+  var LANG = /^\/en(\/|$)/.test(location.pathname) ? "en" : "zh";
+  var L = function (zh, en) { return LANG === "en" ? en : zh; };
+  document.documentElement.lang = (LANG === "en") ? "en" : "zh-CN";
+  document.title = L("LANG OS · 一个人的操作系统", "LANG OS · a one-person OS");
+
+  /* ============================================================
      数据层：三个磁盘 + 网络邻居 + 系统工具
-     —— 有线上地址就填 url，窗口即从"待接入"变为可直接试用
-     —— 社交/项目真实链接填进对应 url/href 即可，无需改结构
      ============================================================ */
 
   var esc = function (s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); };
@@ -467,136 +475,138 @@
   var ITEMS = {
     /* —— 影像:/ —— */
     panda: {
-      ico: "熊", name: "熊猫团团认世界", cat: "AIGC 创作", en: "AIGC", type: "AI动画 · 10集 · 优酷少儿", status: "已上线", width: 38,
+      ico: "熊", name: L("熊猫团团认世界", "Panda TuanTuan Explores the World"), cat: L("AIGC 创作", "AIGC Creation"), en: "AIGC",
+      type: L("AI动画 · 10集 · 优酷少儿", "AI animation · 10 eps · Youku Kids"), status: L("已上线", "Live"), width: 38,
       url: "https://v.youku.com/v_show/id_XNjUyMjk5NzAxNg==.html",
       body: function () {
-        return '<p class="dim"><b>熊猫团团认世界</b> · 10 集 AI 动画儿童系列，已在优酷上线；单集约 3 分钟，单集制作约 20 小时。自制 Claude Skill 工作流，辅助完成分镜脚本、首尾帧提示词和视频生成，平台与工具结合了 Lovart、Tapnow、Flow 完成制作。</p>' +
+        return '<p class="dim">' + L("<b>熊猫团团认世界</b> · 10 集 AI 动画儿童系列，已在优酷上线；单集约 3 分钟，单集制作约 20 小时。自制 Claude Skill 工作流，辅助完成分镜脚本、首尾帧提示词和视频生成，平台与工具结合了 Lovart、Tapnow、Flow 完成制作。", "<b>Panda TuanTuan Explores the World</b> · a 10-episode AI-animated children\'s series, now live on Youku; about 3 minutes per episode and roughly 20 hours to make each. Built on a self-made Claude Skill workflow that assists with storyboard scripts, first/last-frame prompts and video generation, produced with Lovart, Tapnow and Flow.") + '</p>' +
           gallery([
-            ["assets/panda-1.jpg", "住宅区人行道 · 场景"],
-            ["assets/panda-2.jpg", "分镜 · 拿甜甜圈"],
-            ["assets/panda-3.jpg", "分镜 · 收银区背景"],
-            ["assets/panda-4.jpg", "角色与画面设定"]
+            ["assets/panda-1.jpg", L("住宅区人行道 · 场景", "Residential sidewalk · scene")],
+            ["assets/panda-2.jpg", L("分镜 · 拿甜甜圈", "Storyboard · grabbing a donut")],
+            ["assets/panda-3.jpg", L("分镜 · 收银区背景", "Storyboard · checkout background")],
+            ["assets/panda-4.jpg", L("角色与画面设定", "Character & art design")]
           ]) +
-          linkRow([["优酷观看", ITEMS.panda.url]]);
+          linkRow([[L("优酷观看", "Watch on Youku"), ITEMS.panda.url]]);
       }
     },
     buzzegg: {
-      ico: "商", name: "商业影像 · Buzzegg", cat: "传统影视制作", en: "FILM", type: "传统影视 · 广告 / 内容片", status: "已归档", width: 38,
+      ico: "商", name: L("商业影像 · Buzzegg", "Commercial Film · Buzzegg"), cat: L("传统影视制作", "Traditional Film"), en: "FILM",
+      type: L("传统影视 · 广告 / 内容片", "Film · commercials / content"), status: L("已归档", "Archived"), width: 38,
       body: function () {
-        return '<p class="dim">为新能源车企、计算机及外设等品牌拍摄制作广告片。以下为几支样片链接。也可去新片场查看更多。</p>' +
+        return '<p class="dim">' + L("为新能源车企、计算机及外设等品牌拍摄制作广告片。以下为几支样片链接。也可去新片场查看更多。", "Commercials produced for brands across EV, computing and peripherals. A few sample films below — more on Xinpianchang.") + '</p>' +
           gallery([
-            ["assets/tvc-cherry.jpg", "CHERRY 70周年 TVC"],
-            ["assets/tvc-surface.jpg", "微软 Surface Pro 9"],
-            ["assets/tvc-ford.jpg", "福特 Mustang Mach-E"]
+            ["assets/tvc-cherry.jpg", L("CHERRY 70周年 TVC", "CHERRY 70th Anniversary TVC")],
+            ["assets/tvc-surface.jpg", L("微软 Surface Pro 9", "Microsoft Surface Pro 9")],
+            ["assets/tvc-ford.jpg", L("福特 Mustang Mach-E", "Ford Mustang Mach-E")]
           ]) +
           linkRow([
-            ["CHERRY 70周年 TVC", "https://www.xinpianchang.com/a12492855"],
-            ["微软 Surface Pro 9", "https://www.xinpianchang.com/a12334071"],
-            ["福特 Mustang Mach-E", "https://www.xinpianchang.com/a12334050"],
-            ["新片场作品集", "https://www.xinpianchang.com/u13462261"]
+            [L("CHERRY 70周年 TVC", "CHERRY 70th Anniversary TVC"), "https://www.xinpianchang.com/a12492855"],
+            [L("微软 Surface Pro 9", "Microsoft Surface Pro 9"), "https://www.xinpianchang.com/a12334071"],
+            [L("福特 Mustang Mach-E", "Ford Mustang Mach-E"), "https://www.xinpianchang.com/a12334050"],
+            [L("新片场作品集", "Xinpianchang portfolio"), "https://www.xinpianchang.com/u13462261"]
           ]);
       }
     },
     /* —— 网页:/ —— */
     dictation: {
-      ico: "听", name: "English Dictation", type: "Web 工具 · 试用中", status: "试用中", width: 42,
+      ico: "听", name: "English Dictation", type: L("Web 工具 · 试用中", "Web tool · in trial"), status: L("试用中", "In trial"), width: 42,
       url: "https://dictation.buzzegg.cn/",
       body: function () {
-        return '<div class="crumb">网页:/ English Dictation</div>' +
-          '<p class="dim">一个基于本地音频、在线视频链接和逐句播放器的轻量英语学习工具，独立完成并已部署，目前小范围试用。</p>' +
-          shotSm("assets/app-dictation.jpg", "English Dictation 界面") +
+        return '<div class="crumb">' + L("网页:/", "WEB:/") + ' English Dictation</div>' +
+          '<p class="dim">' + L("一个基于本地音频、在线视频链接和逐句播放器的轻量英语学习工具，独立完成并已部署，目前小范围试用。", "A lightweight English-learning tool built around local audio, online video links and a sentence-by-sentence player. Built solo and deployed; currently in limited trial.") + '</p>' +
+          shotSm("assets/app-dictation.jpg", "English Dictation") +
           appMount(ITEMS.dictation.url);
       }
     },
     focustree: {
-      ico: "树", name: "Focus Tree", type: "Web 工具 · 已上线", status: "运行中", width: 42,
+      ico: "树", name: "Focus Tree", type: L("Web 工具 · 已上线", "Web tool · live"), status: L("运行中", "Running"), width: 42,
       url: "https://focus.buzzegg.cn/",
       body: function () {
-        return '<div class="crumb">网页:/ Focus Tree</div>' +
-          '<p class="dim">AI 让一个人可以同时推进更多事情，也让工作和生活更容易失去重心。我想做一个给自由职业者和内容创作者使用的“外脑、个人助理和成长地图”，把目标、项目、进展和想法放进同一个结构里。</p>' +
-          '<p class="dim">Focus Tree 会根据用户设定的目标和项目状态，重新计算各个项目的权重，并用树状结构显示当前重心。AI 助手帮助用户判断下一步、记录已经完成的工作，也帮助新想法找到合适的位置。这是我对“一个人如何管理越来越多的可能性”做的一次产品尝试。</p>' +
-          shotSm("assets/app-focus.jpg", "Focus Tree 界面") +
+        return '<div class="crumb">' + L("网页:/", "WEB:/") + ' Focus Tree</div>' +
+          '<p class="dim">' + L("AI 让一个人可以同时推进更多事情，也让工作和生活更容易失去重心。我想做一个给自由职业者和内容创作者使用的“外脑、个人助理和成长地图”，把目标、项目、进展和想法放进同一个结构里。", "AI lets one person push more things forward at once — and makes it easier to lose your center across work and life. I wanted an “external brain, personal assistant and growth map” for freelancers and creators, putting goals, projects, progress and ideas into one structure.") + '</p>' +
+          '<p class="dim">' + L("Focus Tree 会根据用户设定的目标和项目状态，重新计算各个项目的权重，并用树状结构显示当前重心。AI 助手帮助用户判断下一步、记录已经完成的工作，也帮助新想法找到合适的位置。这是我对“一个人如何管理越来越多的可能性”做的一次产品尝试。", "Focus Tree recomputes each project’s weight from the goals and states you set, and shows your current focus as a tree. An AI assistant helps you decide the next step, log finished work, and give new ideas the right place. It’s my product attempt at “how one person manages ever-growing possibilities.”") + '</p>' +
+          shotSm("assets/app-focus.jpg", "Focus Tree") +
           appMount(ITEMS.focustree.url);
       }
     },
     framesonata: {
-      ico: "谱", name: "Frame Sonata", type: "Web 工具 · 已上线", status: "运行中", width: 42,
+      ico: "谱", name: "Frame Sonata", type: L("Web 工具 · 已上线", "Web tool · live"), status: L("运行中", "Running"), width: 42,
       url: "https://frame-sonata.buzzegg.cn/",
       body: function () {
-        return '<div class="crumb">网页:/ Frame Sonata</div>' +
-          '<p class="dim">分镜从创作到拍摄落地要经历多次整理和解释，场景、道具及其他制作信息也容易散落在不同文件里。工作中还需要反复向团队和客户呈现，任何小改动都可能牵动整套文件。我希望把它做成一个帮助导演和制片专注创意的工作台，把重复整理交给工具和 AI。</p>' +
-          '<p class="dim">Frame Sonata 把分镜从创建延伸到演示和制作推进，支持整理 storyboard / pitch deck，并记录场景、道具等制作信息，减少整理和沟通成本。项目已完成产品结构、界面和功能迭代，现已上线，按商业化产品持续迭代。</p>' +
-          shotSm("assets/app-framesonata.jpg", "Frame Sonata 界面") +
+        return '<div class="crumb">' + L("网页:/", "WEB:/") + ' Frame Sonata</div>' +
+          '<p class="dim">' + L("分镜从创作到拍摄落地要经历多次整理和解释，场景、道具及其他制作信息也容易散落在不同文件里。工作中还需要反复向团队和客户呈现，任何小改动都可能牵动整套文件。我希望把它做成一个帮助导演和制片专注创意的工作台，把重复整理交给工具和 AI。", "From creation to the set, storyboards go through rounds of reorganizing and explaining, and scene, prop and other production info scatters across files. You also present to teams and clients again and again, and any small change can ripple through the whole document set. I wanted a workbench that lets directors and producers focus on the creative and hands the repetitive tidying to tools and AI.") + '</p>' +
+          '<p class="dim">' + L("Frame Sonata 把分镜从创建延伸到演示和制作推进，支持整理 storyboard / pitch deck，并记录场景、道具等制作信息，减少整理和沟通成本。项目已完成产品结构、界面和功能迭代，现已上线，按商业化产品持续迭代。", "Frame Sonata extends storyboards from creation to presentation and production, helping organize storyboards / pitch decks and recording scene and prop info to cut coordination cost. Its product structure, UI and features have iterated; it’s now live and keeps iterating as a commercial product.") + '</p>' +
+          shotSm("assets/app-framesonata.jpg", "Frame Sonata") +
           appMount(ITEMS.framesonata.url);
       }
     },
 
     /* —— 移动端:/ —— */
     miniapp: {
-      ico: "码", name: "HTML 预览 · 小程序", type: "微信小程序 · 2026.07 上线", status: "运行中", width: 30,
+      ico: "码", name: L("HTML 预览 · 小程序", "HTML Preview · Mini Program"), type: L("微信小程序 · 2026.07 上线", "WeChat Mini Program · launched 2026.07"), status: L("运行中", "Running"), width: 30,
       body: function () {
-        return '<p class="dim">AI 让制作 HTML Slides、网页和前端小应用变得越来越容易，但分享仍然很麻烦：微信、飞书和手机端通常无法直接打开 HTML，转成 PDF 又会丢失动态效果。我在自己反复遇到这个问题后，判断这里缺少一个方便流通 HTML 的入口，于是做了「HTML 预览」小程序。</p>' +
-          '<p class="dim">它从最初的个人预览，逐步增加 HTML 小游戏、小工具和单页应用也能免部署分享。</p>' +
-          '<div class="appshow">' + phoneShot("assets/app-html.jpg", "HTML 预览小程序界面") + qr("assets/qr-html.jpg", "微信扫码使用") + '</div>';
+        return '<p class="dim">' + L("AI 让制作 HTML Slides、网页和前端小应用变得越来越容易，但分享仍然很麻烦：微信、飞书和手机端通常无法直接打开 HTML，转成 PDF 又会丢失动态效果。我在自己反复遇到这个问题后，判断这里缺少一个方便流通 HTML 的入口，于是做了「HTML 预览」小程序。", "AI makes it ever easier to build HTML slides, web pages and small front-end apps — but sharing is still a pain: WeChat, Feishu and phones usually can’t open HTML directly, and exporting to PDF loses the motion. After hitting this again and again, I figured there was no easy way to pass HTML around, so I built the “HTML Preview” mini program.") + '</p>' +
+          '<p class="dim">' + L("它从最初的个人预览，逐步增加 HTML 小游戏、小工具和单页应用也能免部署分享。", "Starting as a personal previewer, it grew to let HTML mini-games, tools and single-page apps be shared without any deployment.") + '</p>' +
+          '<div class="appshow">' + phoneShot("assets/app-html.jpg", "HTML Preview") + qr("assets/qr-html.jpg", L("微信扫码使用", "Scan with WeChat")) + '</div>';
       }
     },
     iglink: {
-      ico: "存", name: "IG链接存图 · 小程序", type: "微信小程序 · 工具", status: "运行中", width: 30,
+      ico: "存", name: L("IG链接存图 · 小程序", "IG Link Saver · Mini Program"), type: L("微信小程序 · 工具", "WeChat Mini Program · tool"), status: L("运行中", "Running"), width: 30,
       body: function () {
-        return '<p class="dim">追星过程中顺手做的方便大家的小程序，链接经由 google cloud 中部署的 YT-DLP 解析再传回阿里云 ECS。</p>' +
-          '<div class="appshow">' + phoneShot("assets/app-iglink.jpg", "IG链接存图小程序界面") + qr("assets/qr-iglink.jpg", "微信扫码使用") + '</div>';
+        return '<p class="dim">' + L("追星过程中顺手做的方便大家的小程序，链接经由 google cloud 中部署的 YT-DLP 解析再传回阿里云 ECS。", "A little mini program I made for fun while fangirling: a link is parsed by yt-dlp deployed on Google Cloud, then sent back to Aliyun ECS.") + '</p>' +
+          '<div class="appshow">' + phoneShot("assets/app-iglink.jpg", "IG Link Saver") + qr("assets/qr-iglink.jpg", L("微信扫码使用", "Scan with WeChat")) + '</div>';
       }
     },
     shunbian: {
-      ico: "顺", name: "顺便", type: "轻应用 · 已上线", status: "运行中", width: 42,
+      ico: "顺", name: L("顺便", "Shunbian"), type: L("轻应用 · 已上线", "Web app · live"), status: L("运行中", "Running"), width: 42,
       url: "https://shunbian-853b693f.eazo.dev/",
       body: function () {
-        return '<p class="dim">生活中存在一类“有机会可以做，但不值得专门安排”的事情。例如：</p>' +
+        return '<p class="dim">' + L("生活中存在一类“有机会可以做，但不值得专门安排”的事情。例如：", "There’s a kind of thing in life you “could do if the chance comes up, but isn’t worth scheduling.” For example:") + '</p>' +
           '<ul class="dim" style="margin:0.2rem 0 0.5rem; padding-left:1.3rem">' +
-            '<li>疯狂星期四路过肯德基的时候可以考虑买</li>' +
-            '<li>最近某个奶茶店在做联名活动，如果刚好想喝奶茶可以考虑点这家</li>' +
-            '<li>有一个展想看，如果刚好在附近、时间合适可以去</li>' +
-            '<li>下次经过某个商场时顺便退货、买东西或看看某个柜台</li>' +
+            '<li>' + L("疯狂星期四路过肯德基的时候可以考虑买", "Grabbing KFC when you pass by on “Crazy Thursday”") + '</li>' +
+            '<li>' + L("最近某个奶茶店在做联名活动，如果刚好想喝奶茶可以考虑点这家", "A bubble-tea shop has a collab on — worth a try if you happen to want one") + '</li>' +
+            '<li>' + L("有一个展想看，如果刚好在附近、时间合适可以去", "An exhibition you’d like to see, if you’re nearby and the timing fits") + '</li>' +
+            '<li>' + L("下次经过某个商场时顺便退货、买东西或看看某个柜台", "Returning something, shopping, or checking a counter next time you pass a mall") + '</li>' +
           '</ul>' +
-          '<p class="dim">这些事情并不是传统意义上的 Todo：用户通常不知道什么时候一定要做，甚至不知道会在什么地点做。因此它们很难进入 Calendar / Todo；即使被收藏在小红书、大众点评、备忘录等地方，真正出现合适机会时，用户也往往想不起来。</p>' +
-          '<p style="border-left:2px solid var(--seal); padding-left:0.7rem; margin:0.6rem 0">“顺便”要解决的不是“附近有什么可以做”，而是“当机会出现时，把用户自己曾经产生过的意图重新想起来”。</p>' +
-          '<div class="appshow">' + phoneShot("assets/app-shunbian.jpg", "顺便 · 首页") + linkRow([["打开顺便", ITEMS.shunbian.url]]) + '</div>';
+          '<p class="dim">' + L("这些事情并不是传统意义上的 Todo：用户通常不知道什么时候一定要做，甚至不知道会在什么地点做。因此它们很难进入 Calendar / Todo；即使被收藏在小红书、大众点评、备忘录等地方，真正出现合适机会时，用户也往往想不起来。", "These aren’t traditional to-dos: you usually don’t know when they must happen, or even where. So they don’t fit Calendar / Todo; and even saved in Xiaohongshu, Dianping or Notes, you often can’t recall them when the right moment actually arrives.") + '</p>' +
+          '<p style="border-left:2px solid var(--seal); padding-left:0.7rem; margin:0.6rem 0">' + L("“顺便”要解决的不是“附近有什么可以做”，而是“当机会出现时，把用户自己曾经产生过的意图重新想起来”。", "Shunbian isn’t about “what’s nearby to do” — it’s about “resurfacing, when the chance appears, an intention you once had.”") + '</p>' +
+          '<div class="appshow">' + phoneShot("assets/app-shunbian.jpg", "Shunbian") + linkRow([[L("打开顺便", "Open Shunbian"), ITEMS.shunbian.url]]) + '</div>';
       }
     }
   };
 
   /* ---------- 三个磁盘 ---------- */
   var DRIVES = {
-    moving: { ch: "影", label: "影像", en: "IMAGE", vol: "影像:/", inline: true, items: ["buzzegg", "panda"] },
-    web:    { ch: "网", label: "网页", en: "WEB",   vol: "网页:/", items: ["dictation", "focustree", "framesonata"] },
-    mobile: { ch: "端", label: "移动端", en: "MOBILE", vol: "移动端:/", inline: true, items: ["miniapp", "iglink", "shunbian"] }
+    moving: { ch: "影", label: L("影像", "Image"), en: "IMAGE", vol: L("影像:/", "IMAGE:/"), inline: true, items: ["buzzegg", "panda"] },
+    web:    { ch: "网", label: L("网页", "Web"), en: "WEB",   vol: L("网页:/", "WEB:/"), items: ["dictation", "focustree", "framesonata"] },
+    mobile: { ch: "端", label: L("移动端", "Mobile"), en: "MOBILE", vol: L("移动端:/", "MOBILE:/"), inline: true, items: ["miniapp", "iglink", "shunbian"] }
   };
 
   /* ---------- 网络邻居（社交链接） ---------- */
   var NEIGH = [
-    { ico: "红", name: "小红书", addr: "xiaohongshu.com", href: "https://xhslink.cn/m/9tKm5K7ACjg" },
+    { ico: "红", name: L("小红书", "Xiaohongshu"), addr: "xiaohongshu.com", href: "https://xhslink.cn/m/9tKm5K7ACjg" },
     { ico: "X",  name: "X", addr: "x.com/LangYi31007", href: "https://x.com/LangYi31007" },
     { ico: "GH", name: "GitHub", addr: "github.com/LangYY", href: "https://github.com/LangYY" }
   ];
 
-  /* ---------- 桌面图标顺序：三磁盘 → 网络邻居 →（间隔）→ 系统工具 ---------- */
+  /* ---------- 桌面图标顺序：三磁盘 →（间隔）→ 系统工具 ---------- */
   var DESKTOP = [
-    { id: "drive:moving", ch: "影", label: "影像", en: "IMAGE" },
-    { id: "drive:web",    ch: "网", label: "网页", en: "WEB" },
-    { id: "drive:mobile", ch: "端", label: "移动端", en: "MOBILE" },
+    { id: "drive:moving", ch: "影", label: L("影像", "Image"), en: "IMAGE" },
+    { id: "drive:web",    ch: "网", label: L("网页", "Web"), en: "WEB" },
+    { id: "drive:mobile", ch: "端", label: L("移动端", "Mobile"), en: "MOBILE" },
     { gap: true },
-    { id: "about",    ch: "关", label: "关于本机", cls: "sys" },
-    { id: "ps",       ch: "程", label: "进程管理器", cls: "sys" },
-    { id: "terminal", ch: "终", label: "终端", cls: "sys" },
-    { id: "ask",      ch: "问", label: "问题箱", cls: "sys" }
+    { id: "about",    ch: "关", label: L("关于本机", "About"), cls: "sys" },
+    { id: "ps",       ch: "程", label: L("进程管理器", "Processes"), cls: "sys" },
+    { id: "terminal", ch: "终", label: L("终端", "Terminal"), cls: "sys" },
+    { id: "ask",      ch: "问", label: L("问题箱", "Ask"), cls: "sys" }
   ];
 
   var TITLES = {
-    "drive:moving": "影像", "drive:web": "网页", "drive:mobile": "移动端",
-    about: "关于本机", ps: "进程管理器", terminal: "终端", ask: "问题箱"
+    "drive:moving": L("影像", "Image"), "drive:web": L("网页", "Web"), "drive:mobile": L("移动端", "Mobile"),
+    about: L("关于本机", "About"), ps: L("进程管理器", "Processes"), terminal: L("终端", "Terminal"), ask: L("问题箱", "Ask")
   };
   var PATHS = {
-    "drive:moving": "/vol/影像", "drive:web": "/vol/网页", "drive:mobile": "/vol/移动端",
+    "drive:moving": L("/vol/影像", "/vol/image"), "drive:web": L("/vol/网页", "/vol/web"), "drive:mobile": L("/vol/移动端", "/vol/mobile"),
     about: "/sys/about", ps: "/sys/proc", terminal: "/sys/term", ask: "/sys/ask"
   };
 
@@ -656,62 +666,63 @@
       title = it2.name; ch = it2.ico; width = it2.width || 34; path = "/item/" + winId.slice(5);
       buildHTML = it2.body;
     } else if (winId === "about") {
-      title = "关于本机"; ch = "关"; width = 32;
+      title = L("关于本机", "About"); ch = "关"; width = 32;
       buildHTML = function () {
         var nodes = NEIGH.map(function (n) {
           var ext = n.href && n.href !== "#";
           return '<a class="node" href="' + n.href + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' +
             '<span class="nico">' + n.ico + '</span>' +
             '<span><span class="nname">' + n.name + '</span><br><span class="naddr">' + n.addr + '</span></span>' +
-            '<span class="nout">' + (ext ? '外链 ↗' : '待接入') + '</span></a>';
+            '<span class="nout">' + (ext ? L('外链 ↗', 'open ↗') : L('待接入', 'soon')) + '</span></a>';
         }).join("");
-        return '<h3>关于这台机器</h3>' +
-          '<p>你好，欢迎来玩。</p>' +
-          '<p>桌面上挂着三个磁盘——<b>影像</b>、<b>网页</b>、<b>移动端</b>，装的是我用 AI 造出来的东西；有些作品能直接点开试用，有些还在施工。</p>' +
-          '<p>联系我：<a href="mailto:lang.soda@gmail.com" style="color:var(--seal)">lang.soda@gmail.com</a></p>' +
-          '<div class="crumb" style="margin-top:0.9rem">ELSEWHERE — 我在别处的据点</div>' +
+        return '<h3>' + L("关于这台机器", "About this machine") + '</h3>' +
+          '<p>' + L("你好，欢迎来玩。", "Hi — welcome, come play.") + '</p>' +
+          '<p>' + L("桌面上挂着三个磁盘——<b>影像</b>、<b>网页</b>、<b>移动端</b>，装的是我用 AI 造出来的东西；有些作品能直接点开试用，有些还在施工。", "Three disks sit on this desktop — <b>Image</b>, <b>Web</b>, <b>Mobile</b> — holding things I made with AI; some open and run right here, some are still under construction.") + '</p>' +
+          '<p>' + L("联系我：", "Contact: ") + '<a href="mailto:lang.soda@gmail.com" style="color:var(--seal)">lang.soda@gmail.com</a></p>' +
+          '<div class="crumb" style="margin-top:0.9rem">' + L("ELSEWHERE — 我在别处的据点", "ELSEWHERE — where to find me") + '</div>' +
           '<div class="neigh">' + nodes + '</div>' +
-          '<p class="dim" style="margin-top:0.8rem">终端里藏了几个命令，无聊的话敲敲 <code>help</code>。</p>';
+          '<p class="dim" style="margin-top:0.8rem">' + L("终端里藏了几个命令，无聊的话敲敲 <code>help</code>。", "A few commands hide in the terminal — type <code>help</code> if you’re bored.") + '</p>';
       };
     } else if (winId === "ps") {
-      title = "进程管理器"; ch = "程"; width = 36;
+      title = L("进程管理器", "Processes"); ch = "程"; width = 36;
       buildHTML = function () {
+        var D = { img: L("影像:/", "IMAGE:/"), web: L("网页:/", "WEB:/"), mob: L("移动端:/", "MOBILE:/") };
         var rows = [
-          ["1024", "熊猫团团认世界", "已上线", "影像:/", "—", "item:panda"],
-          ["1006", "商业影像 Buzzegg", "已归档", "影像:/", "—", "item:buzzegg"],
-          ["1701", "English Dictation", "试用中", "网页:/", "6%", "item:dictation"],
-          ["1702", "Focus Tree", "运行中", "网页:/", "9%", "item:focustree"],
-          ["1704", "Frame Sonata", "运行中", "网页:/", "12%", "item:framesonata"],
-          ["2007", "HTML 预览小程序", "运行中", "移动端:/", "31%", "item:miniapp"],
-          ["2011", "IG链接存图", "运行中", "移动端:/", "8%", "item:iglink"],
-          ["2009", "顺便", "运行中", "移动端:/", "18%", "item:shunbian"]
+          ["1024", L("熊猫团团认世界", "Panda TuanTuan"), L("已上线", "Live"), D.img, "—", "item:panda"],
+          ["1006", L("商业影像 Buzzegg", "Buzzegg Film"), L("已归档", "Archived"), D.img, "—", "item:buzzegg"],
+          ["1701", "English Dictation", L("试用中", "In trial"), D.web, "6%", "item:dictation"],
+          ["1702", "Focus Tree", L("运行中", "Running"), D.web, "9%", "item:focustree"],
+          ["1704", "Frame Sonata", L("运行中", "Running"), D.web, "12%", "item:framesonata"],
+          ["2007", L("HTML 预览小程序", "HTML Preview"), L("运行中", "Running"), D.mob, "31%", "item:miniapp"],
+          ["2011", L("IG链接存图", "IG Link Saver"), L("运行中", "Running"), D.mob, "8%", "item:iglink"],
+          ["2009", L("顺便", "Shunbian"), L("运行中", "Running"), D.mob, "18%", "item:shunbian"]
         ].map(function (r) {
           return '<tr' + (r[5] ? ' data-open="' + r[5] + '"' : '') + '>' +
             '<td>' + r[0] + '</td><td>' + r[1] + '</td>' +
             '<td><span class="st ' + statusCls(r[2]) + '">' + r[2] + '</span></td>' +
             '<td style="color:var(--ink-soft)">' + r[3] + '</td><td>' + r[4] + '</td></tr>';
         }).join("");
-        return '<h3>进程管理器</h3><p class="dim">本机所有进程，状态如实。点击带磁盘的进程可打开对应窗口。</p>' +
-          '<table class="ps"><thead><tr><th>PID</th><th>进程</th><th>状态</th><th>磁盘</th><th>心力</th></tr></thead><tbody>' +
+        return '<h3>' + L("进程管理器", "Processes") + '</h3><p class="dim">' + L("本机所有进程，状态如实。点击带磁盘的进程可打开对应窗口。", "All processes, states as they are. Click one with a disk to open its window.") + '</p>' +
+          '<table class="ps"><thead><tr><th>PID</th><th>' + L("进程", "Process") + '</th><th>' + L("状态", "State") + '</th><th>' + L("磁盘", "Disk") + '</th><th>' + L("心力", "Energy") + '</th></tr></thead><tbody>' +
           rows + '</tbody></table>' +
-          '<p class="dim" style="margin-top:0.7rem">状态如实——在跑的在跑，试用的试用，不做多余修饰。</p>';
+          '<p class="dim" style="margin-top:0.7rem">' + L("状态如实——在跑的在跑，试用的试用，不做多余修饰。", "States as they are — running is running, trial is trial, no extra dressing.") + '</p>';
       };
     } else if (winId === "terminal") {
-      title = "终端"; ch = "终"; width = 36;
+      title = L("终端", "Terminal"); ch = "终"; width = 36;
       buildHTML = function () {
-        return '<div class="term" tabindex="0"><div class="out">LANG OS 终端 · 输入 help 查看可用命令</div>' +
+        return '<div class="term" tabindex="0"><div class="out">' + L("LANG OS 终端 · 输入 help 查看可用命令", "LANG OS terminal · type help for commands") + '</div>' +
           '<div class="term-line"><span class="prompt">lang@os:~$&nbsp;</span>' +
-          '<input class="term-input" autocomplete="off" spellcheck="false" aria-label="终端输入"></div></div>';
+          '<input class="term-input" autocomplete="off" spellcheck="false" aria-label="' + L("终端输入", "terminal input") + '"></div></div>';
       };
     } else if (winId === "ask") {
-      title = "问题箱"; ch = "问"; width = 32;
+      title = L("问题箱", "Ask"); ch = "问"; width = 32;
       buildHTML = function () {
-        return '<h3>问题箱</h3>' +
-          '<p class="dim">想问我点什么？留下问题，我会看到。留个联系方式方便回你（选填）。</p>' +
+        return '<h3>' + L("问题箱", "Ask me anything") + '</h3>' +
+          '<p class="dim">' + L("想问我点什么？留下问题，我会看到。留个联系方式方便回你（选填）。", "Got a question? Leave it here — I’ll see it. A contact is optional so I can reply.") + '</p>' +
           '<form class="askform" novalidate>' +
-            '<textarea name="message" required placeholder="你的问题…"></textarea>' +
-            '<input name="contact" placeholder="邮箱 / 微信（选填，方便回复）">' +
-            '<button type="submit">投递 ↗</button>' +
+            '<textarea name="message" required placeholder="' + L("你的问题…", "Your question…") + '"></textarea>' +
+            '<input name="contact" placeholder="' + L("邮箱 / 微信（选填，方便回复）", "Email / WeChat (optional)") + '">' +
+            '<button type="submit">' + L("投递 ↗", "Send ↗") + '</button>' +
           '</form>' +
           '<div class="ask-status" role="status"></div>';
       };
@@ -721,8 +732,8 @@
   }
 
   function statusCls(s) {
-    if (/崩溃/.test(s)) return "dead";
-    if (/挂起|归档/.test(s)) return "paused";
+    if (/崩溃|crash/i.test(s)) return "dead";
+    if (/挂起|归档|paus|archiv/i.test(s)) return "paused";
     return "";
   }
 
@@ -788,7 +799,7 @@
       } else {
         var empty = document.createElement("div");
         empty.className = "frame-empty";
-        empty.innerHTML = "线上地址待接入<br>部署 / 备案完成后，这里就能直接试用";
+        empty.innerHTML = L("线上地址待接入<br>部署 / 备案完成后，这里就能直接试用", "URL coming soon<br>once deployed, it runs right here");
         mount.replaceWith(empty);
       }
     }
@@ -804,9 +815,9 @@
     form.addEventListener("submit", function (e) {
       e.preventDefault();
       var msg = form.message.value.trim();
-      if (!msg) { status.className = "ask-status err"; status.textContent = "先写点问题再投递～"; return; }
+      if (!msg) { status.className = "ask-status err"; status.textContent = L("先写点问题再投递～", "Write a question first ~"); return; }
       var btn = form.querySelector("button");
-      btn.disabled = true; status.className = "ask-status"; status.textContent = "投递中…";
+      btn.disabled = true; status.className = "ask-status"; status.textContent = L("投递中…", "Sending…");
       fetch(ASK_ENDPOINT, {
         method: "POST",
         headers: { "Accept": "application/json", "Content-Type": "application/json" },
@@ -814,10 +825,10 @@
       }).then(function (r) {
         if (!r.ok) throw new Error("bad");
         form.reset();
-        status.className = "ask-status ok"; status.textContent = "已投递，谢谢！我会看到。";
+        status.className = "ask-status ok"; status.textContent = L("已投递，谢谢！我会看到。", "Sent — thank you! I’ll see it.");
       }).catch(function () {
         status.className = "ask-status err";
-        status.innerHTML = '投递失败，直接发我也行：<a href="mailto:lang.soda@gmail.com" style="color:var(--seal)">lang.soda@gmail.com</a>';
+        status.innerHTML = L("投递失败，直接发我也行：", "Couldn’t send — email me instead: ") + '<a href="mailto:lang.soda@gmail.com" style="color:var(--seal)">lang.soda@gmail.com</a>';
       }).then(function () { btn.disabled = false; });
     });
   }
@@ -877,44 +888,48 @@
     var parts = cmd.split(/\s+/), c = parts[0].toLowerCase();
     switch (c) {
       case "help":
-        print("可用命令：\n  ls            列出磁盘与作品\n  open <名字>   打开窗口，如 open 熊猫团团\n  ask           问题箱 · 问我点什么\n  contact       联系方式\n  coffee        ☕ 送你一杯咖啡\n  date          现在几点\n  clear         清屏\n  sudo hire     （需要权限）\n\n（还有几个命令没写出来，自己试试）"); break;
-      case "ask": openWindow("ask"); print("打开问题箱…"); break;
+        print(L("可用命令：\n  ls            列出磁盘与作品\n  open <名字>   打开窗口，如 open 熊猫团团\n  ask           问题箱 · 问我点什么\n  contact       联系方式\n  coffee        ☕ 送你一杯咖啡\n  date          现在几点\n  clear         清屏\n  sudo hire     （需要权限）\n\n（还有几个命令没写出来，自己试试）",
+          "Commands:\n  ls            list disks & works\n  open <name>   open a window, e.g. open panda\n  ask           ask box · ask me anything\n  contact       contact\n  coffee        ☕ a coffee on me\n  date          time now\n  clear         clear screen\n  sudo hire     (permission required)\n\n(a few more aren’t listed — try them)")); break;
+      case "ask": openWindow("ask"); print(L("打开问题箱…", "Opening the ask box…")); break;
       case "contact": case "email":
-        print('联系方式：<a href="mailto:lang.soda@gmail.com" style="color:#7FC4B4">lang.soda@gmail.com</a>'); break;
+        print(L("联系方式：", "Contact: ") + '<a href="mailto:lang.soda@gmail.com" style="color:#7FC4B4">lang.soda@gmail.com</a>'); break;
       case "coffee":
-        print("☕ 送你一杯咖啡。领取方式：加微信 <span style=\"color:#F6F3EA\">langyy</span>（备注咖啡）。"); break;
+        print(L("☕ 送你一杯咖啡。领取方式：加微信 <span style=\"color:#F6F3EA\">langyy</span>（备注咖啡）。", "☕ A coffee on me. To claim: add WeChat <span style=\"color:#F6F3EA\">langyy</span> (note: coffee).")); break;
       case "ls":
-        print("磁盘：影像:/  网页:/  移动端:/     网络邻居：小红书 X GitHub\n影像:/   熊猫团团  商业影像\n网页:/   English Dictation  FocusTree  FrameSonata\n移动端:/ HTML预览  IG存图  顺便"); break;
-      case "date": print(new Date().toLocaleString("zh-CN")); break;
+        print(L("磁盘：影像:/  网页:/  移动端:/     网络邻居：小红书 X GitHub\n影像:/   熊猫团团  商业影像\n网页:/   English Dictation  FocusTree  FrameSonata\n移动端:/ HTML预览  IG存图  顺便",
+          "Disks: IMAGE:/  WEB:/  MOBILE:/     Elsewhere: Xiaohongshu X GitHub\nIMAGE:/  Panda TuanTuan  Buzzegg\nWEB:/    English Dictation  Focus Tree  Frame Sonata\nMOBILE:/ HTML Preview  IG Saver  Shunbian")); break;
+      case "date": print(new Date().toLocaleString(L("zh-CN", "en-US"))); break;
       case "clear":
         term.querySelectorAll(".out").forEach(function (o) { o.remove(); }); break;
       case "open":
         var name = parts.slice(1).join("").toLowerCase();
         var map = {
           "影像": "drive:moving", "网页": "drive:web", "移动端": "drive:mobile",
-          "网络邻居": "about", "邻居": "about", "社交": "about",
-          "熊猫团团": "item:panda", "熊猫": "item:panda", "团团": "item:panda",
+          "image": "drive:moving", "video": "drive:moving", "web": "drive:web", "mobile": "drive:mobile",
+          "网络邻居": "about", "邻居": "about", "社交": "about", "elsewhere": "about",
+          "熊猫团团": "item:panda", "熊猫": "item:panda", "团团": "item:panda", "panda": "item:panda",
           "商业影像": "item:buzzegg", "buzzegg": "item:buzzegg",
           "englishdictation": "item:dictation", "dictation": "item:dictation", "听写": "item:dictation",
           "focustree": "item:focustree", "树": "item:focustree",
-          "framesonata": "item:framesonata", "framesonata本": "item:framesonata", "谱": "item:framesonata",
-          "小程序": "item:miniapp", "html预览": "item:miniapp", "html": "item:miniapp",
-          "ig存图": "item:iglink", "ig": "item:iglink", "存图": "item:iglink",
-          "顺便": "item:shunbian",
-          "关于": "about", "进程": "ps", "终端": "terminal",
-          "问题箱": "ask", "提问": "ask", "问": "ask"
+          "framesonata": "item:framesonata", "谱": "item:framesonata",
+          "小程序": "item:miniapp", "html预览": "item:miniapp", "html": "item:miniapp", "htmlpreview": "item:miniapp",
+          "ig存图": "item:iglink", "ig": "item:iglink", "存图": "item:iglink", "iglinksaver": "item:iglink",
+          "顺便": "item:shunbian", "shunbian": "item:shunbian",
+          "关于": "about", "about": "about", "进程": "ps", "processes": "ps", "终端": "terminal", "terminal": "terminal",
+          "问题箱": "ask", "提问": "ask", "问": "ask", "question": "ask"
         };
         var id = map[name];
-        if (id) { openWindow(id); print("正在打开 " + name + " …"); }
-        else print("open: 找不到「" + esc(name) + "」。试试 ls"); break;
+        if (id) { openWindow(id); print(L("正在打开 ", "Opening ") + esc(name) + " …"); }
+        else print(L("open: 找不到「" + esc(name) + "」。试试 ls", "open: can’t find “" + esc(name) + "”. try ls")); break;
       case "sudo":
         if (/hire|招我|offer/i.test(cmd))
-          print('权限确认通过。\n<span style="color:#F6F3EA">联系方式已解锁：</span><a href="mailto:lang.soda@gmail.com" style="color:#7FC4B4">lang.soda@gmail.com</a>\n（这个命令的存在，说明这台机器的主人对新的可能性保持开机状态）');
-        else print("sudo: 想清楚再用 root 权限。"); break;
-      case "rm": print("rm: 拒绝执行。这台机器上的进程，一个都舍不得删。"); break;
-      case "exit": print("exit: 这里是乐园，不设出口。关掉窗口就好。"); break;
+          print(L('权限确认通过。\n<span style="color:#F6F3EA">联系方式已解锁：</span><a href="mailto:lang.soda@gmail.com" style="color:#7FC4B4">lang.soda@gmail.com</a>\n（这个命令的存在，说明这台机器的主人对新的可能性保持开机状态）',
+            'Access granted.\n<span style="color:#F6F3EA">Contact unlocked: </span><a href="mailto:lang.soda@gmail.com" style="color:#7FC4B4">lang.soda@gmail.com</a>\n(that this command exists means the owner stays open to new possibilities)'));
+        else print(L("sudo: 想清楚再用 root 权限。", "sudo: think before you use root.")); break;
+      case "rm": print(L("rm: 拒绝执行。这台机器上的进程，一个都舍不得删。", "rm: refused. Not one process here I’m willing to delete.")); break;
+      case "exit": print(L("exit: 这里是乐园，不设出口。关掉窗口就好。", "exit: this is a playground, no exit. Just close a window.")); break;
       default:
-        print(esc(c) + ": 命令不存在。输入 help 看看有什么。");
+        print(esc(c) + L(": 命令不存在。输入 help 看看有什么。", ": command not found. type help."));
     }
   }
 
@@ -940,6 +955,20 @@
     })();
   }
 
+  /* ---------- 菜单栏 · 语言切换 ---------- */
+  document.getElementById("tagline").textContent = L("一个人的操作系统", "A one-person operating system");
+  document.getElementById("heart").textContent = L("心力 ▓▓▓▓▓░░ 恢复中", "Energy ▓▓▓▓▓░░ recovering");
+  (function () {
+    var b = document.getElementById("langtoggle");
+    b.textContent = L("EN", "中");
+    b.title = L("Switch to English", "切换到中文");
+    b.addEventListener("click", function (e) {
+      e.preventDefault();
+      try { sessionStorage.setItem("langos-booted", "1"); } catch (err) {}
+      location.pathname = (LANG === "en") ? "/zh" : "/en";
+    });
+  })();
+
   /* ---------- 时钟 ---------- */
   var clock = document.getElementById("clock");
   function tickClock() { var n = new Date(); clock.textContent = String(n.getHours()).padStart(2, "0") + ":" + String(n.getMinutes()).padStart(2, "0"); }
@@ -947,17 +976,25 @@
 
   /* ---------- 开机 ---------- */
   var boot = document.getElementById("boot"), log = document.getElementById("bootlog");
-  var lines = [
+  var lines = LANG === "en" ? [
+    ["LANG OS v0.2 — a one-person operating system", ""],
+    ["Mounting disks  IMAGE:/  WEB:/  MOBILE:/ …", "ok"],
+    ["Connecting elsewhere  RED · X · GitHub …", "ok"],
+    ["Checking unfinished projects… several", "warn"],
+    ["Starting energy manager… recovering", "ok"],
+    ["Welcome back.", ""]
+  ] : [
     ["LANG OS v0.2 — 一个人的操作系统", ""],
     ["挂载磁盘 影像:/ 网页:/ 移动端:/ ……", "ok"],
     ["连接网络邻居 小红书 · X · GitHub ……", "ok"],
     ["检查未完成项目…… 若干", "warn"],
     ["启动心力管理进程…… 恢复中", "ok"],
-    ["欢迎回来。", ""]
+    [L("欢迎回来。", "Welcome back."), ""]
   ];
-  function endBoot() { boot.classList.add("off"); setTimeout(function () { boot.remove(); }, 600); if (!isMobile()) openWindow("about"); }
+  var booted = false; try { booted = sessionStorage.getItem("langos-booted") === "1"; } catch (err) {}
+  function endBoot() { try { sessionStorage.setItem("langos-booted", "1"); } catch (e) {} boot.classList.add("off"); setTimeout(function () { boot.remove(); }, 600); if (!isMobile()) openWindow("about"); }
   boot.addEventListener("click", endBoot);
-  if (reduced) { endBoot(); }
+  if (reduced || booted) { endBoot(); }
   else {
     var i = 0;
     (function next() {
