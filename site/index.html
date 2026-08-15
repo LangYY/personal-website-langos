@@ -461,7 +461,7 @@
   /* ---------- 问题箱：Formspree 表单接收端点 ----------
      去 formspree.io 建一个表单（收件邮箱 lang.soda@gmail.com），
      把它给的 https://formspree.io/f/xxxxxxxx 填到这里即可生效。 */
-  var ASK_ENDPOINT = "https://formspree.io/f/YOUR_FORM_ID";
+  var ASK_ENDPOINT = "https://formspree.io/f/mqpzbvrn";
 
   /* ---------- 作品条目 ---------- */
   var ITEMS = {
@@ -877,7 +877,7 @@
     var parts = cmd.split(/\s+/), c = parts[0].toLowerCase();
     switch (c) {
       case "help":
-        print("可用命令：\n  ls            列出磁盘与作品\n  open <名字>   打开窗口，如 open 熊猫团团\n  ask           问题箱 · 问我点什么\n  contact       联系方式\n  date          现在几点\n  clear         清屏\n  sudo hire     （需要权限）\n\n（还有几个命令没写出来，自己试试）"); break;
+        print("可用命令：\n  ls            列出磁盘与作品\n  open <名字>   打开窗口，如 open 熊猫团团\n  ask           问题箱 · 问我点什么\n  contact       联系方式\n  coffee        ☕ 送你一杯咖啡\n  date          现在几点\n  clear         清屏\n  sudo hire     （需要权限）\n\n（还有几个命令没写出来，自己试试）"); break;
       case "ask": openWindow("ask"); print("打开问题箱…"); break;
       case "contact": case "email":
         print('联系方式：<a href="mailto:lang.soda@gmail.com" style="color:#7FC4B4">lang.soda@gmail.com</a>'); break;
