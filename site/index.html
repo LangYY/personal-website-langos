@@ -71,6 +71,16 @@
   #menubar a { color: var(--teal-bright); text-decoration: none; }
   #menubar a:hover { color: var(--paper); }
   #heart { white-space: nowrap; }
+  /* 语言切换：显眼的胶囊按钮 */
+  #langtoggle {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    border: 1px solid var(--teal-bright); border-radius: 999px;
+    padding: 0.12rem 0.7rem; white-space: nowrap;
+    color: var(--teal-bright); background: rgba(127, 196, 180, 0.1);
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  #langtoggle:hover { background: var(--teal-bright); color: var(--desk); }
+  #langtoggle .tgt { font-weight: 700; }
 
   /* ================= 桌面图标 ================= */
   #icons {
@@ -960,7 +970,7 @@
   document.getElementById("heart").textContent = L("心力 ▓▓▓▓▓░░ 恢复中", "Energy ▓▓▓▓▓░░ recovering");
   (function () {
     var b = document.getElementById("langtoggle");
-    b.textContent = L("EN", "中");
+    b.innerHTML = '<span class="hide-sm">语言/Language ·&nbsp;</span><span class="tgt">' + L("EN", "中") + '</span>';
     b.title = L("Switch to English", "切换到中文");
     b.addEventListener("click", function (e) {
       e.preventDefault();
