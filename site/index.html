@@ -588,7 +588,7 @@
 
   /* ---------- 三个磁盘 ---------- */
   var DRIVES = {
-    moving: { ch: "影", label: L("影像", "Image"), en: "IMAGE", vol: L("影像:/", "IMAGE:/"), inline: true, items: ["buzzegg", "panda"] },
+    moving: { ch: "影", label: L("影像", "Video"), en: "VIDEO", vol: L("影像:/", "VIDEO:/"), inline: true, items: ["buzzegg", "panda"] },
     web:    { ch: "网", label: L("网页", "Web"), en: "WEB",   vol: L("网页:/", "WEB:/"), items: ["dictation", "focustree", "framesonata"] },
     mobile: { ch: "端", label: L("移动端", "Mobile"), en: "MOBILE", vol: L("移动端:/", "MOBILE:/"), inline: true, items: ["miniapp", "iglink", "shunbian"] }
   };
@@ -602,7 +602,7 @@
 
   /* ---------- 桌面图标顺序：三磁盘 →（间隔）→ 系统工具 ---------- */
   var DESKTOP = [
-    { id: "drive:moving", ch: "影", label: L("影像", "Image"), en: "IMAGE" },
+    { id: "drive:moving", ch: "影", label: L("影像", "Video"), en: "VIDEO" },
     { id: "drive:web",    ch: "网", label: L("网页", "Web"), en: "WEB" },
     { id: "drive:mobile", ch: "端", label: L("移动端", "Mobile"), en: "MOBILE" },
     { gap: true },
@@ -613,7 +613,7 @@
   ];
 
   var TITLES = {
-    "drive:moving": L("影像", "Image"), "drive:web": L("网页", "Web"), "drive:mobile": L("移动端", "Mobile"),
+    "drive:moving": L("影像", "Video"), "drive:web": L("网页", "Web"), "drive:mobile": L("移动端", "Mobile"),
     about: L("关于本机", "About"), ps: L("进程管理器", "Processes"), terminal: L("终端", "Terminal"), ask: L("问题箱", "Ask")
   };
   var PATHS = {
@@ -710,7 +710,7 @@
     } else if (winId === "ps") {
       title = L("进程管理器", "Processes"); ch = "程"; width = 36;
       buildHTML = function () {
-        var D = { img: L("影像:/", "IMAGE:/"), web: L("网页:/", "WEB:/"), mob: L("移动端:/", "MOBILE:/") };
+        var D = { img: L("影像:/", "VIDEO:/"), web: L("网页:/", "WEB:/"), mob: L("移动端:/", "MOBILE:/") };
         var rows = [
           ["1024", L("熊猫团团认世界", "Panda TuanTuan"), L("已上线", "Live"), D.img, "—", "item:panda"],
           ["1006", L("商业影像 Buzzegg", "Buzzegg Film"), L("已归档", "Archived"), D.img, "—", "item:buzzegg"],
@@ -921,7 +921,7 @@
         print(L("☕ 送你一杯咖啡。领取方式：加微信 <span style=\"color:#F6F3EA\">langyy</span>（备注咖啡）。", "☕ A coffee on me. To claim: add WeChat <span style=\"color:#F6F3EA\">langyy</span> (note: coffee).")); break;
       case "ls":
         print(L("磁盘：影像:/  网页:/  移动端:/     网络邻居：小红书 X GitHub\n影像:/   熊猫团团  商业影像\n网页:/   English Dictation  FocusTree  FrameSonata\n移动端:/ HTML预览  IG存图  顺便",
-          "Disks: IMAGE:/  WEB:/  MOBILE:/     Elsewhere: Xiaohongshu X GitHub\nIMAGE:/  Panda TuanTuan  Buzzegg\nWEB:/    English Dictation  Focus Tree  Frame Sonata\nMOBILE:/ HTML Preview  IG Saver  Shunbian")); break;
+          "Disks: VIDEO:/  WEB:/  MOBILE:/     Elsewhere: Xiaohongshu X GitHub\nVIDEO:/  Panda TuanTuan  Buzzegg\nWEB:/    English Dictation  Focus Tree  Frame Sonata\nMOBILE:/ HTML Preview  IG Saver  Shunbian")); break;
       case "date": print(new Date().toLocaleString(L("zh-CN", "en-US"))); break;
       case "clear":
         term.querySelectorAll(".out").forEach(function (o) { o.remove(); }); break;
@@ -1001,7 +1001,7 @@
   var boot = document.getElementById("boot"), log = document.getElementById("bootlog");
   var lines = LANG === "en" ? [
     ["LANG OS v0.2 — a one-person operating system", ""],
-    ["Mounting disks  IMAGE:/  WEB:/  MOBILE:/ …", "ok"],
+    ["Mounting disks  VIDEO:/  WEB:/  MOBILE:/ …", "ok"],
     ["Connecting elsewhere  RED · X · GitHub …", "ok"],
     ["Checking unfinished projects… several", "warn"],
     ["Starting energy manager… recovering", "ok"],
