@@ -65,7 +65,9 @@
     z-index: 9000;
     user-select: none;
   }
-  #menubar .os-name { color: var(--paper); font-weight: 600; }
+  #menubar .os-name { color: var(--paper); font-weight: 600; cursor: pointer; }
+  #menubar .os-name:hover { color: var(--teal-bright); }
+  #menubar .os-name .home-ico { color: var(--teal-bright); margin-right: 0.15rem; }
   #menubar .os-name .seal-dot { color: var(--seal); }
   #menubar .spacer { flex: 1; }
   #menubar a { color: var(--teal-bright); text-decoration: none; }
@@ -209,17 +211,27 @@
     letter-spacing: 0.1em;
   }
   .titlebar .spacer { flex: 1; }
+  .winback {
+    background: none; border: 0; cursor: pointer;
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.05em;
+    color: var(--teal); white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 0.15rem;
+    padding: 0.15rem 0.35rem 0.15rem 0; margin-right: 0.15rem;
+  }
+  .winback .chev { font-size: 1.15rem; line-height: 0.7; }
+  .winback:hover { color: var(--seal); }
   .winbtn {
-    width: 0.95rem; height: 0.95rem;
+    width: 1.05rem; height: 1.05rem;
     border-radius: 50%;
     border: 1px solid var(--ink-soft);
     background: transparent;
-    cursor: pointer;
-    padding: 0;
+    cursor: pointer; padding: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.66rem; line-height: 1; color: var(--ink-soft);
   }
-  .winbtn:hover { background: var(--ink-soft); }
-  .winbtn.close { border-color: var(--seal); }
-  .winbtn.close:hover { background: var(--seal); }
+  .winbtn:hover { background: var(--ink-soft); color: var(--paper); }
+  .winbtn.close { border-color: var(--seal); color: var(--seal); }
+  .winbtn.close:hover { background: var(--seal); color: var(--paper); }
   .winbody {
     flex: 1 1 auto;
     min-height: 0;
@@ -339,7 +351,7 @@
 
   /* 图片 / 画廊 / 二维码 / 外链按钮组 */
   .shot { display: block; width: 100%; border: 1px solid var(--paper-edge); border-radius: 4px; margin: 0.6rem 0; }
-  .shot-sm { max-width: 19rem; }
+  .shot-sm { max-width: 13rem; }
   .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem; margin: 0.7rem 0; }
   .gallery figure { margin: 0; }
   .gallery img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; border: 1px solid var(--paper-edge); border-radius: 4px; }
@@ -357,7 +369,7 @@
   hr.sect-div { border: 0; border-top: 1px dashed var(--paper-edge); margin: 1.3rem 0; }
   /* 手机截图 */
   .appshow { display: flex; gap: 1.3rem; align-items: center; flex-wrap: wrap; margin: 0.8rem 0 0.3rem; }
-  .phone-shot { display: block; max-width: 12rem; width: 100%; border: 1px solid var(--paper-edge); border-radius: 12px; }
+  .phone-shot { display: block; max-width: 10rem; width: 100%; border: 1px solid var(--paper-edge); border-radius: 12px; }
   .appshow .qr-real { margin: 0; }
 
   /* 问题箱表单 */
@@ -411,8 +423,13 @@
     #icons .group-gap { display: none; }
     .window { position: fixed !important; inset: 2.1rem 0 0 0 !important; width: 100% !important; max-height: none; border-left: 0; border-right: 0; resize: none !important; }
     .window::after { display: none; }
-    .titlebar { cursor: default; }
+    .titlebar { cursor: default; padding: 0.7rem 0.9rem; }
     #menubar .hide-sm { display: none; }
+    /* 手机端：返回更醒目、点击区域更大 */
+    .winback { font-size: 0.9rem; color: var(--seal); font-weight: 600; padding: 0.3rem 0.5rem 0.3rem 0; }
+    .winback .chev { font-size: 1.5rem; }
+    .winbtn { width: 1.25rem; height: 1.25rem; font-size: 0.78rem; }
+    #menubar .os-name { font-size: 0.9rem; }
   }
   @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 </style>
@@ -776,10 +793,11 @@
 
     var bar = document.createElement("div");
     bar.className = "titlebar";
-    bar.innerHTML = '<span class="t">' + spec.title + '</span><span class="path">' + spec.path + '</span>' +
+    bar.innerHTML = '<button class="winback" aria-label="' + L("返回桌面", "Back to desktop") + '"><span class="chev">‹</span>' + L("返回", "Back") + '</button>' +
+      '<span class="t">' + spec.title + '</span><span class="path">' + spec.path + '</span>' +
       '<span class="spacer"></span>' +
-      '<button class="winbtn min" title="收进 dock" aria-label="最小化"></button>' +
-      '<button class="winbtn close" title="关闭" aria-label="关闭"></button>';
+      '<button class="winbtn min" title="' + L("最小化", "Minimize") + '" aria-label="' + L("最小化", "Minimize") + '">−</button>' +
+      '<button class="winbtn close" title="' + L("关闭", "Close") + '" aria-label="' + L("关闭", "Close") + '">✕</button>';
     var body = document.createElement("div");
     body.className = "winbody";
     body.innerHTML = spec.html();
@@ -791,6 +809,7 @@
     focusWin(win);
 
     bar.querySelector(".close").addEventListener("click", function () { closeWin(winId); });
+    bar.querySelector(".winback").addEventListener("click", function () { closeWin(winId); });
     bar.querySelector(".min").addEventListener("click", function () { minimize(winId); });
     win.addEventListener("pointerdown", function () { focusWin(win); });
     enableDrag(win, bar);
@@ -858,6 +877,7 @@
   }
 
   function closeWin(id) { var w = openWins[id]; if (w) { w.remove(); delete openWins[id]; removeDock(id); } }
+  function closeAllWindows() { Object.keys(openWins).forEach(function (id) { closeWin(id); }); }
   function focusWin(win) {
     document.querySelectorAll(".window").forEach(function (w) { w.classList.remove("focused"); });
     win.classList.add("focused"); win.style.zIndex = ++zTop;
@@ -880,7 +900,7 @@
   function enableDrag(win, bar) {
     var sx, sy, ox, oy, dragging = false;
     bar.addEventListener("pointerdown", function (e) {
-      if (e.target.closest(".winbtn") || isMobile()) return;
+      if (e.target.closest(".winbtn") || e.target.closest(".winback") || isMobile()) return;
       dragging = true; sx = e.clientX; sy = e.clientY;
       var r = win.getBoundingClientRect(); ox = r.left; oy = r.top;
       bar.setPointerCapture(e.pointerId);
@@ -978,6 +998,15 @@
       requestAnimationFrame(tick);
     })();
   }
+
+  /* ---------- 菜单栏 · 左上角 = 回到主页（关掉所有窗口）---------- */
+  (function () {
+    var os = document.querySelector("#menubar .os-name");
+    os.insertAdjacentHTML("afterbegin", '<span class="home-ico">⌂</span>');
+    os.title = L("回到主页", "Home");
+    os.setAttribute("role", "button");
+    os.addEventListener("click", closeAllWindows);
+  })();
 
   /* ---------- 菜单栏 · 语言切换 ---------- */
   document.getElementById("tagline").textContent = L("一个人的操作系统", "A one-person operating system");
