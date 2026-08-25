@@ -446,7 +446,7 @@
   <span class="spacer"></span>
   <span id="heart" class="hide-sm"></span>
   <a id="langtoggle" href="#" role="button"></a>
-  <a href="mailto:lang.soda@gmail.com">lang.soda@gmail.com</a>
+  <a href="mailto:lang.soda@gmail.com" class="hide-sm">lang.soda@gmail.com</a>
   <span id="clock"></span>
 </div>
 
@@ -1002,7 +1002,6 @@
   /* ---------- 菜单栏 · 左上角 = 回到主页（关掉所有窗口）---------- */
   (function () {
     var os = document.querySelector("#menubar .os-name");
-    os.insertAdjacentHTML("afterbegin", '<span class="home-ico">⌂</span>');
     os.title = L("回到主页", "Home");
     os.setAttribute("role", "button");
     os.addEventListener("click", closeAllWindows);
